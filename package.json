@@ -1,0 +1,36 @@
+{
+  "name": "angular-electron-typescript-scaffold",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "clean": "rimraf dist/*",
+    "rebuild-debug": "npm run clean && npm run build-vendor-debug && npm run build-app-debug",
+    "build-vendor-debug": "webpack --config ./.config/webpack.vendor.js --bail",
+    "build-vendor-release": "webpack --config ./.config/webpack.vendor.js --bail --env.concat --env.uglify",
+    "build-app-debug": "webpack --config ./source/app-basic-test/webpack.js --bail --verbose",
+    "build-app-release": "webpack --config ./source/app-basic-test/webpack.js --bail --env.concat --env.uglify",
+    "build-profile": "webpack --config ./webpack.app.js --profile --json > ./dist/webpack-profile.json && echo \"TOOL: http://webpack.github.com/analyse\" && webpack-bundle-analyzer ./dist/webpack-profile.json",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Christopher Schear (chris.npm@schear.us)",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/angular": "^1.6.39",
+    "@types/angular-cookies": "^1.4.5",
+    "@types/bowser": "^1.0.31",
+    "@types/node": "^8.0.57",
+    "add-asset-html-webpack-plugin": "^2.1.2",
+    "html-webpack-plugin": "^2.30.1",
+    "rimraf": "^2.6.2",
+    "ts-loader": "^3.2.0",
+    "typescript": "^2.6.2",
+    "webpack": "^3.10.0",
+    "webpack-bundle-analyzer": "^2.9.1"
+  },
+  "dependencies": {
+    "angular": "^1.6.7",
+    "angular-cookies": "^1.6.7",
+    "bowser": "^1.8.1"
+  }
+}
