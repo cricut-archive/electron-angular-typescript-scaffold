@@ -6,7 +6,7 @@ const webpackPluginHtmlAsset = require('add-asset-html-webpack-plugin');
 module.exports = function(inArgs) {
     const lUglify = (inArgs && inArgs.uglify); //--env.uglify
     const lConcat = (inArgs && inArgs.concat); //--env.concat
-
+    
     const lAppPath = ['.', 'source', inArgs.appName].join('/');
     
     const lVendorPath = path.normalize(path.resolve(__dirname, '..', 'dist', 'js', inArgs.vendorPath));

@@ -8,8 +8,9 @@
     "rebuild-debug": "npm run clean && npm run build-vendor-debug && npm run build-app-debug",
     "build-vendor-debug": "webpack --config ./.config/webpack.vendor.js --bail",
     "build-vendor-release": "webpack --config ./.config/webpack.vendor.js --bail --env.concat --env.uglify",
-    "build-app-debug": "webpack --config ./source/app-basic-test/webpack.js --bail --verbose",
+    "build-app-debug": "webpack --config ./source/app-basic-test/webpack.js --bail --verbose --env.serve --watch",
     "build-app-release": "webpack --config ./source/app-basic-test/webpack.js --bail --env.concat --env.uglify",
+    "serve": "webpack-dev-server --config ./source/app-basic-test/webpack.js --host design-local.cricut.com --content-base ./dist --open",
     "build-profile": "webpack --config ./webpack.app.js --profile --json > ./dist/webpack-profile.json && echo \"TOOL: http://webpack.github.com/analyse\" && webpack-bundle-analyzer ./dist/webpack-profile.json",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -26,7 +27,8 @@
     "ts-loader": "^3.2.0",
     "typescript": "^2.6.2",
     "webpack": "^3.10.0",
-    "webpack-bundle-analyzer": "^2.9.1"
+    "webpack-bundle-analyzer": "^2.9.1",
+    "webpack-dev-server": "^2.9.7"
   },
   "dependencies": {
     "angular": "^1.6.7",
