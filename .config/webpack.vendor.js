@@ -8,7 +8,8 @@ module.exports = function(inArgs) {
   //LIST OF ALL POSSIBLE VENDOR INCLUDES
   let lVendorEntry = {
     'angular': ['angular', 'angular-cookies', '@uirouter/angularjs'],
-    'bowser': ['bowser']
+    'bowser': ['bowser'],
+    'lodash': ['lodash']
   };
 
   //FLATTEN LIST OUR FOR CONCAT FILE

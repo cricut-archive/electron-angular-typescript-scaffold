@@ -11,7 +11,7 @@
     "build-app-debug": "webpack --config ./source/app-basic-test/webpack.js --bail",
     "build-app-release": "webpack --config ./source/app-basic-test/webpack.js --bail --env.concat --env.uglify",
     "serve": "webpack-dev-server --config ./source/app-basic-test/webpack.js --host design-local.cricut.com --content-base ./dist --open",
-    "build-profile": "webpack --config ./webpack.app.js --profile --json > ./dist/webpack-profile.json && echo \"TOOL: http://webpack.github.com/analyse\" && webpack-bundle-analyzer ./dist/webpack-profile.json",
+    "build-profile": "webpack --config ./source/app-basic-test/webpack.js --profile --json > ./dist/webpack-profile.json && echo \"TOOL: http://webpack.github.com/analyse\" && webpack-bundle-analyzer ./dist/webpack-profile.json",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Christopher Schear (chris.npm@schear.us)",

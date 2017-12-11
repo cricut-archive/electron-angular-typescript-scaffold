@@ -6,7 +6,7 @@ module.exports = module.exports = function(inArgs) {
     inArgs.appName = 'app-basic-test';
 
     inArgs.vendorPath = lConcat ? '' : 'vendor/';
-    inArgs.vendorDlls = lConcat ? ['vendor'] : ['angular', 'bowser'];
+    inArgs.vendorDlls = lConcat ? ['vendor'] : ['angular', 'bowser', 'lodash'];
 
     return require('../../.config/webpack.webapp')(inArgs);
 }
