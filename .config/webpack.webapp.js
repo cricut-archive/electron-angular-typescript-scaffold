@@ -1,7 +1,7 @@
 const path = require("path");
 const webpack = require("webpack");
+
 const webpackPluginHtml = require('html-webpack-plugin');
-const webpackPluginHtmlAsset = require('add-asset-html-webpack-plugin');
 
 module.exports = function(inArgs) {
     const lUglify = (inArgs && inArgs.uglify); //--env.uglify
@@ -22,13 +22,21 @@ module.exports = function(inArgs) {
 
         context: path.normalize(__dirname + '/..'),
 
-        entry: {'app': [lAppPath + "/index.ts"]},
+        entry: {
+            'app': [lAppPath + "/index.ts"]
+        },
         
-        resolve: { extensions: ['.ts', '.js'] },
+        resolve: { 
+            extensions: ['.ts', '.js']
+        },
+        resolveLoader: {
+            modules: ['node_modules', path.join(__dirname, 'plugin')]
+         },
         
         module: {
             loaders: [
-                { test: /\.ts$/,    loader: 'ts-loader',    include: [path.resolve(__dirname, '..', 'source')] }
+                { test: /\.ts$/, loader: 'ts-loader', include: [path.resolve(__dirname, '..', 'source')] },
+                { test: /ng-templates.ts$/, loader: 'ng-template', include: [path.resolve(__dirname, '..', 'source')] }
             ]
         },
 

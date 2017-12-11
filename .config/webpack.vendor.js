@@ -7,7 +7,7 @@ module.exports = function(inArgs) {
 
   //LIST OF ALL POSSIBLE VENDOR INCLUDES
   let lVendorEntry = {
-    'angular': ['angular', 'angular-cookies'],
+    'angular': ['angular', 'angular-cookies', '@uirouter/angularjs'],
     'bowser': ['bowser']
   };
 
