@@ -3,6 +3,8 @@ const webpack = require("webpack");
 
 const webpackPluginHtml = require('html-webpack-plugin');
 
+const TsCheckerWebpackPlugin = require("ts-checker-webpack-plugin");
+
 module.exports = function(inArgs) {
     const lUglify = (inArgs && inArgs.uglify); //--env.uglify
     const lConcat = (inArgs && inArgs.concat); //--env.concat
@@ -35,15 +37,10 @@ module.exports = function(inArgs) {
         
         module: {
             loaders: [
-                { test: /\.ts$/, loader: 'ts-loader', include: [path.resolve(__dirname, '..', 'source')] }, //TS COMPILE
+                { test: /\.ts$/, loader: 'ts-loader', include: [path.resolve(__dirname, '..', 'source')], 
+                  options: { transpileOnly: true } }, //TS COMPILE
                 { test: /ng-templates.ts$/, loader: 'ng-template', include: [path.resolve(__dirname, '..', 'source')] } //ANGULA TEMPLATES
             ]
-            /*,
-            rules: [
-                { test: /\.ts$/, enforce: 'pre', loader: 'tslint-loader',
-                  options: { }
-                }
-            ]*/
         },
 
         output: {
@@ -66,7 +63,13 @@ module.exports = function(inArgs) {
                 template: lAppPath + '/index.html',
                 inject: false,
                 vendor: lVendorScriptInclude
-            })
+            }),
+
+            new TsCheckerWebpackPlugin({
+                tsconfig: path.resolve(lAppPath + '/tsconfig.json'),
+                tslint: path.resolve(lAppPath + '/tslint.json'),
+                diagnosticFormatter: "codeframe", // "ts-loader", "stylish", "codeframe"
+              })
         
         ]
     };

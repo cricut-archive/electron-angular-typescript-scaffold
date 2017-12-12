@@ -7,14 +7,13 @@ interface ITemplateData {
 }
 
 export class ngTemplates {
-    public RegisterTemplates($templateCache: ITemplateCacheService): void {
-        $templateCache;
-
-        _.map(this.mTemplates, t => $templateCache.put(t.Path.split('/').slice(2).join('/'), t.Data));
-    }
-
     private mTemplates: ITemplateData[] = [
-        //@@AUTO GENERATED TEMPLATES
+        // @@AUTO GENERATED TEMPLATES
     ];
+
+    public RegisterTemplates($templateCache: ITemplateCacheService): void {
+
+        _.map(this.mTemplates, (t) => $templateCache.put(t.Path.split('/').slice(2).join('/'), t.Data));
+    }
 
 }

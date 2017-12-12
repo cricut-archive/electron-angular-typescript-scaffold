@@ -1,6 +1,6 @@
-import { ngRoutes } from './ng-routes';
-import { UrlRouterProvider, StateProvider } from '@uirouter/angularjs';
+import { StateProvider, UrlRouterProvider } from '@uirouter/angularjs';
 import { IModule } from 'angular';
+import { ngRoutes } from './ng-routes';
 
 import '@uirouter/angularjs';
 
@@ -12,7 +12,7 @@ export class ngConfig {
             ($stateProvider: StateProvider, $urlRouterProvider: UrlRouterProvider) => {
                 // REGISTER ALL ROUTES
                 this.mRoutes = new ngRoutes(inModule.name, $stateProvider, $urlRouterProvider);
-             }
+             },
             ]);
         }
 }

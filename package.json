@@ -11,7 +11,7 @@
     "build-app-debug": "webpack --config ./source/app-basic-test/webpack.js --bail",
     "build-app-release": "webpack --config ./source/app-basic-test/webpack.js --bail --env.concat --env.uglify",
     "serve": "webpack-dev-server --config ./source/app-basic-test/webpack.js --host design-local.cricut.com --content-base ./dist --open",
-    "build-profile": "webpack --config ./source/app-basic-test/webpack.js --profile --json > ./dist/webpack-profile.json && echo \"TOOL: http://webpack.github.com/analyse\" && webpack-bundle-analyzer ./dist/webpack-profile.json",
+    "build-profile": "webpack --config ./source/app-basic-test/webpack.js --profile --json > ./dist/app-profile.json && webpack --config ./.config/webpack.vendor.js --profile --json > ./dist/vendor-profile.json && echo \"TOOL: http://webpack.github.com/analyse\" && webpack-bundle-analyzer ./dist/app-profile.json",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Christopher Schear (chris.npm@schear.us)",
@@ -27,6 +27,7 @@
     "html-webpack-plugin": "^2.30.1",
     "jsesc": "^2.5.1",
     "rimraf": "^2.6.2",
+    "ts-checker-webpack-plugin": "^0.3.0",
     "ts-loader": "^3.2.0",
     "tslint": "^5.8.0",
     "tslint-loader": "^3.5.3",
