@@ -1,5 +1,7 @@
 {
     "compilerOptions": {
+        "strict": true,
+        
         "module": "amd",
         "moduleResolution": "node",
         

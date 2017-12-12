@@ -5,7 +5,7 @@ import { IModule } from 'angular';
 import '@uirouter/angularjs';
 
 export class ngConfig {
-    private mRoutes: ngRoutes = null;
+    private mRoutes: ngRoutes;
 
     constructor(inModule: IModule) {
         inModule.config(['$stateProvider', '$urlRouterProvider',

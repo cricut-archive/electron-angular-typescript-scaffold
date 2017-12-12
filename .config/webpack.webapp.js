@@ -30,14 +30,20 @@ module.exports = function(inArgs) {
             extensions: ['.ts', '.js']
         },
         resolveLoader: {
-            modules: ['node_modules', path.join(__dirname, 'plugin')]
+            modules: ['node_modules', path.join(__dirname, 'plugin')] //LOAD OUR CUSTOM LOADERS
          },
         
         module: {
             loaders: [
-                { test: /\.ts$/, loader: 'ts-loader', include: [path.resolve(__dirname, '..', 'source')] },
-                { test: /ng-templates.ts$/, loader: 'ng-template', include: [path.resolve(__dirname, '..', 'source')] }
+                { test: /\.ts$/, loader: 'ts-loader', include: [path.resolve(__dirname, '..', 'source')] }, //TS COMPILE
+                { test: /ng-templates.ts$/, loader: 'ng-template', include: [path.resolve(__dirname, '..', 'source')] } //ANGULA TEMPLATES
             ]
+            /*,
+            rules: [
+                { test: /\.ts$/, enforce: 'pre', loader: 'tslint-loader',
+                  options: { }
+                }
+            ]*/
         },
 
         output: {
