@@ -3,7 +3,7 @@ const webpack = require("webpack");
 
 const webpackPluginHtml = require('html-webpack-plugin');
 
-const TsCheckerWebpackPlugin = require("ts-checker-webpack-plugin");
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 module.exports = function(inArgs) {
     const lUglify = (inArgs && inArgs.uglify); //--env.uglify
@@ -65,10 +65,11 @@ module.exports = function(inArgs) {
                 vendor: lVendorScriptInclude
             }),
 
-            new TsCheckerWebpackPlugin({
+            new ForkTsCheckerWebpackPlugin({
                 tsconfig: path.resolve(lAppPath + '/tsconfig.json'),
                 tslint: path.resolve(lAppPath + '/tslint.json'),
-                diagnosticFormatter: "codeframe", // "ts-loader", "stylish", "codeframe"
+                diagnosticFormatter: "codeframe", // "ts-loader", "stylish", "codeframe",
+                workers: 2
               })
         
         ]
