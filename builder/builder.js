@@ -14,6 +14,12 @@ const fs = require("fs");
 const _ = require("lodash");
 class IBuildParams {
 }
+var BuildAction;
+(function (BuildAction) {
+    BuildAction[BuildAction["BUILD"] = 0] = "BUILD";
+    BuildAction[BuildAction["REBUILD"] = 1] = "REBUILD";
+    BuildAction[BuildAction["CLEAN"] = 2] = "CLEAN";
+})(BuildAction || (BuildAction = {}));
 class Builder {
     Main(inArgv) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -21,13 +27,13 @@ class Builder {
             if (lParams.IsVerbose) {
                 console.log(lParams);
             }
-            if (lParams.Action === 'clean') {
+            if (lParams.Action === BuildAction.CLEAN) {
                 yield this.DoClean(lParams);
             }
-            else if (lParams.Action === 'build') {
+            else if (lParams.Action === BuildAction.BUILD) {
                 yield this.DoBuildVendor(lParams, false);
             }
-            else if (lParams.Action === 'rebuild') {
+            else if (lParams.Action === BuildAction.REBUILD) {
                 yield this.DoClean(lParams);
                 yield this.DoBuildVendor(lParams, true);
             }
@@ -39,10 +45,8 @@ class Builder {
         lBuildParams.NodePath = inArgv[0];
         lBuildParams.BuilderPath = inArgv[1];
         lBuildParams.IsDebug = true;
-        if (['build', 'rebuild', 'clean'].indexOf(inArgv[2]) > -1) {
-            lBuildParams.Action = inArgv[2];
-        }
-        else {
+        lBuildParams.Action = this.SwitchEnumValueType(BuildAction, inArgv[2].toUpperCase());
+        if (!lBuildParams.Action) {
             throw new Error('INVALID BUILD ACTION');
         }
         // DEFAULTS
@@ -141,6 +145,12 @@ class Builder {
                 });
             });
         });
+    }
+    SwitchEnumValueType(e, v) {
+        if (_.isString(v)) {
+            v = v.toUpperCase();
+        }
+        return e[v];
     }
 }
 // WRAP MAIN IN ASYNC TO KICK OFF AWAIT CHAIN

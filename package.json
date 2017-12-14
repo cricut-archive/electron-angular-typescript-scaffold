@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "clean": "node builder/builder.js clean",
+    "clean": "node builder/builder.js cleangg",
     "build": "node builder/builder.js build",
     "rebuild": "node builder/builder.js rebuild",
 

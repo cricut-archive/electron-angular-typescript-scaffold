@@ -52,10 +52,9 @@ class Builder {
         lBuildParams.BuilderPath = inArgv[1];
         lBuildParams.IsDebug = true;
 
-        console.log(BuildAction[inArgv[2]]);
-        if (['build', 'rebuild', 'clean'].indexOf(inArgv[2]) > -1) {
-            lBuildParams.Action = inArgv[2];
-        } else {
+
+        lBuildParams.Action = this.SwitchEnumValueType(BuildAction, inArgv[2].toUpperCase());
+        if (!lBuildParams.Action) {
             throw new Error('INVALID BUILD ACTION');
         }
 
@@ -158,6 +157,14 @@ class Builder {
                 inResolve(inErr ? false : true);
             });
         });
+    }
+
+    private SwitchEnumValueType(e: any, v: string | number): any {
+        if (_.isString(v)) {
+            v = v.toUpperCase();
+        }
+        
+        return e[v];
     }
 
 }
