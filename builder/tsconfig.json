@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "noImplicitAny": true,
+    "strict": true,
+
+    "module": "commonjs",
+    "noEmitOnError": true,
+    "removeComments": false,
+
+    "target": "es2015",
+    "sourceMap": false,
+    "declaration": false
+  },
+  "include": [
+    "./builder.ts"
+  ]
+}

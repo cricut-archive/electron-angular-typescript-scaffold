@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "clean": "rimraf dist/*",
+    "clean": "node builder/builder.js clean",
+    "build": "node builder/builder.js build",
+    "rebuild": "node builder/builder.js rebuild",
+
     "rebuild-debug": "npm run clean && npm run build-vendor-debug && npm run build-app-debug",
     "build-vendor-debug": "webpack --config ./.config/webpack.vendor.js --bail",
     "build-vendor-release": "webpack --config ./.config/webpack.vendor.js --bail --env.concat --env.uglify",
