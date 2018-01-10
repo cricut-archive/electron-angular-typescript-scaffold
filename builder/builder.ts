@@ -15,11 +15,11 @@ function RunTerminal(inCommands: string[], inCWD: string) {
                 const lCmd = '\" ' + inCommands.join(' && ') + ' \"';
                 lTerminal = child_process.spawn('cmd.exe', ['/S', '/C', lCmd], 
                     { cwd: inCWD, stdio: 'inherit', windowsVerbatimArguments: true });
-            } else if ((os.type() === 'Darwin') || (os.type() === 'Linux')) {
+            } else {
                 const lCmd = inCommands.join(' && ');
                 lTerminal = child_process.spawn(lCmd, undefined,
                     { cwd: inCWD, stdio: 'inherit', shell: true });               
-            } else throw new Error(`Unhandled OS '${chalk.yellow(os.type())}'.`)
+            }
         
             lTerminal.on('close', (inCode: number) => (inCode === 0) ? inResolve(): inReject());
         }); 

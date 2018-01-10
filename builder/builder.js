@@ -20,12 +20,10 @@ function RunTerminal(inCommands, inCWD) {
             const lCmd = '\" ' + inCommands.join(' && ') + ' \"';
             lTerminal = child_process.spawn('cmd.exe', ['/S', '/C', lCmd], { cwd: inCWD, stdio: 'inherit', windowsVerbatimArguments: true });
         }
-        else if (os.type() === 'Darwin') {
+        else {
             const lCmd = inCommands.join(' && ');
             lTerminal = child_process.spawn(lCmd, undefined, { cwd: inCWD, stdio: 'inherit', shell: true });
         }
-        else
-            throw new Error(`Unhandled OS '${chalk_1.default.yellow(os.type())}'.`);
         lTerminal.on('close', (inCode) => (inCode === 0) ? inResolve() : inReject());
     });
 }
