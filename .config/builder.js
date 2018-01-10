@@ -93,5 +93,4 @@ if (BUILD_PARAMS.Action == "CLEAN") {
 
 Promise.all(lBuildTasks).then( 
 	()=> process.exit(0), 
-
 	()=> process.exit(-1));

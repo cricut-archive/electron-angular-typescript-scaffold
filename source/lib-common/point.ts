@@ -1,4 +1,3 @@
-import {NativeModel} from './models/protobuf/NativeModel';
 
 export class Point {
     constructor(public x: number = 0, public y: number = 0) {}
@@ -7,32 +6,10 @@ export class Point {
         return new Point(this.x, this.y);
     }
 
-    public fromJSON(inJson: Point): Point {
-        this.x = inJson.x;
-        this.y = inJson.y;
-        return this;
-    }
-
-    public fromProto(inProto: NativeModel.IPoint): Point {
-        this.x = inProto.x || 0;
-        this.y = inProto.y || 0;
-        return this;
-    }
-
-    public toJSON(): Point {
-        // SERIALIZE DATA TO SAVE
-        // COMMENTED OUT PROPERTIES ARE NOT NEED TO DESERIALIZE THIS OBJECT
-        var lJson: Point = ({} as Point);
-
-        lJson.x = this.x;
-        lJson.y = this.y;
-
-        return lJson;
-    }
-
-    public Add(inPoint: Point) {
+    public Add(inPoint: Point): Point {
         this.x += inPoint.x;
         this.y += inPoint.y;
+        return this;
     }
 
     static Subtract(inPoint1: Point, inPoint2: Point): Point {
@@ -40,8 +17,8 @@ export class Point {
         return lPoint;
     }
 
-    static MinXY(inPoint: Point[]): Point|null {
-        let lMinPoint: Point;
+    static MinXY(inPoint: Point[]): Point {
+        let lMinPoint: Point|null;
         if (inPoint.length) {
             lMinPoint = inPoint[0].Clone();
             inPoint.forEach(lPoint => {

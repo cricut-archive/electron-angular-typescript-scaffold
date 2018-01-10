@@ -22,7 +22,6 @@ module.exports = function(inSource) {
         });
     }
 
-    //console.log(':: FILE: ', this.resourcePath);
     glob('./**/tmpl*.html', (inErr, inFiles)=>{
         if (inErr) {
             return lCallback(inErr);

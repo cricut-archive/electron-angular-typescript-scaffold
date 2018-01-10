@@ -8,159 +8,88 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const path = require("path");
 const child_process = require("child_process");
-const fs = require("fs");
-const _ = require("lodash");
-class IBuildParams {
+const os = require("os");
+const chalk_1 = require("chalk");
+const minimist = require("minimist");
+function RunTerminal(inCommands, inCWD) {
+    return new Promise((inResolve, inReject) => {
+        inCommands.map(l => console.log(chalk_1.default.yellow(l)));
+        let lTerminal;
+        if (os.type() === 'Windows_NT') {
+            const lCmd = '\" ' + inCommands.join(' && ') + ' \"';
+            lTerminal = child_process.spawn('cmd.exe', ['/S', '/C', lCmd], { cwd: inCWD, stdio: 'inherit', windowsVerbatimArguments: true });
+        }
+        else if (os.type() === 'Darwin') {
+            const lCmd = inCommands.join(' && ');
+            lTerminal = child_process.spawn(lCmd, undefined, { cwd: inCWD, stdio: 'inherit', shell: true });
+        }
+        else
+            throw new Error('Unhandled OS type.');
+        lTerminal.on('close', (inCode) => (inCode === 0) ? inResolve() : inReject());
+    });
 }
-var BuildAction;
-(function (BuildAction) {
-    BuildAction[BuildAction["BUILD"] = 0] = "BUILD";
-    BuildAction[BuildAction["REBUILD"] = 1] = "REBUILD";
-    BuildAction[BuildAction["CLEAN"] = 2] = "CLEAN";
-})(BuildAction || (BuildAction = {}));
-class Builder {
-    Main(inArgv) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const lParams = this.ParseParams(inArgv);
-            if (lParams.IsVerbose) {
-                console.log(lParams);
-            }
-            if (lParams.Action === BuildAction.CLEAN) {
-                yield this.DoClean(lParams);
-            }
-            else if (lParams.Action === BuildAction.BUILD) {
-                yield this.DoBuildVendor(lParams, false);
-            }
-            else if (lParams.Action === BuildAction.REBUILD) {
-                yield this.DoClean(lParams);
-                yield this.DoBuildVendor(lParams, true);
-            }
-            return 0;
-        });
-    }
-    ParseParams(inArgv) {
-        const lBuildParams = {};
-        lBuildParams.NodePath = inArgv[0];
-        lBuildParams.BuilderPath = inArgv[1];
-        lBuildParams.IsDebug = true;
-        lBuildParams.Action = this.SwitchEnumValueType(BuildAction, inArgv[2].toUpperCase());
-        if (!lBuildParams.Action) {
-            throw new Error('INVALID BUILD ACTION');
+function Clean(inArgs) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const lRimRafPath = './node_modules/rimraf/bin.js';
+        yield RunTerminal([`node ${lRimRafPath} dist/*`], '.');
+    });
+}
+function Build(inArgs) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const lWebpackPath = './node_modules/webpack/bin/webpack.js';
+        for (let i = 0; i < inArgs._.length; i++) {
+            const lTarget = inArgs._[i];
+            const lWebPackArgs = [
+                '--config',
+                (lTarget === 'vendor') ? './.config/webpack.vendor.js' : `./source/${lTarget}/webpack.js`,
+                ...inArgs.v ? ['--verbose'] : [],
+                ...inArgs.r ? ['--env.concat', '--env.uglify'] : [],
+                '--bail', '--colors'
+            ];
+            yield RunTerminal([`node ${lWebpackPath} ${lWebPackArgs.join(' ')}`], '.');
         }
-        // DEFAULTS
-        lBuildParams.Env = '';
-        for (let lArgvAt = 3; lArgvAt < inArgv.length; lArgvAt++) {
-            if ((inArgv[lArgvAt] === '-t') || (inArgv[lArgvAt] === '--target')) {
-                lArgvAt++;
-                lBuildParams.Target = inArgv[lArgvAt].toUpperCase();
-            }
-            else if ((inArgv[lArgvAt] === '-v') || (inArgv[lArgvAt] === '--verbose')) {
-                lBuildParams.IsVerbose = true;
-            }
-            else if ((inArgv[lArgvAt] === '-r') || (inArgv[lArgvAt] === '--release')) {
-                lBuildParams.IsDebug = false;
-            }
-            else if (inArgv[lArgvAt] === '--colors') {
-                // IGNORE - COLOR FLAG PASS THROUGH
-            }
-            else if (inArgv[lArgvAt] === '--env') {
-                lArgvAt++;
-                lBuildParams.Env = inArgv[lArgvAt].toUpperCase();
-            }
-            else {
-                throw new Error(`INVALID BUILD PARAM: ${inArgv[lArgvAt]}`);
-            }
-        }
-        return lBuildParams;
-    }
-    DoClean(inParams) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const lRimRafPath = path.resolve(__dirname, '../node_modules/rimraf/bin.js');
-            yield this.RunExec('node', [lRimRafPath, 'dist/*'], '.');
-        });
-    }
-    DoBuildVendor(inParams, inForceBuild) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const lWebpackPath = path.resolve(__dirname, '../node_modules/webpack/bin/webpack.js');
-            const lCheckPath = `./dist/js/vendor${inParams.IsDebug ? '' : '.dll.js'}`;
-            let lShouldBuild = true;
-            if (!inForceBuild) {
-                lShouldBuild = !(yield this.FileExists(lCheckPath));
-                if (inParams.IsVerbose) {
-                    console.log(`${lCheckPath} EXISTS: ${!lShouldBuild}`);
-                }
-            }
-            if (lShouldBuild) {
-                const lParams = [
-                    '--config', './.config/webpack.vendor.js',
-                    ...inParams.IsVerbose ? ['--verbose'] : [],
-                    ...inParams.IsDebug ? [] : ['--env.concat', '--env.uglify'],
-                    '--bail', '--colors'
-                ];
-                yield this.RunExec('node', [lWebpackPath, ...lParams], '.');
-            }
-        });
-    }
-    RunExec(inPath, inArgs, inCWD, inValidExitCodes) {
-        return __awaiter(this, void 0, void 0, function* () {
-            inValidExitCodes = inValidExitCodes || [0];
-            yield new Promise((inResolve, inReject) => {
-                console.log('RUNNING EXEC: ' + (inPath) + ' ' + (inArgs.join(' ')) + ' @' + (inCWD));
-                const lProcess = child_process.spawn(inPath, inArgs, { cwd: inCWD, shell: true });
-                lProcess.stdout.on('data', (inData) => {
-                    _.filter(inData.toString().split(/\n|\r/), (l) => {
-                        return (l.length > 0);
-                    }).forEach(lLine => {
-                        console.log(lLine);
-                    });
-                });
-                lProcess.on('message', (inData) => {
-                    console.log(inData);
-                });
-                lProcess.on('exit', (inCode) => {
-                    const lExitOK = _.indexOf(inValidExitCodes, inCode) >= 0;
-                    console.log('EXEC: ' + inPath + ' ' + inArgs.join(' ') + ' EXIT: ' + (inCode.toString()));
-                    if (lExitOK) {
-                        inResolve();
-                    }
-                    else {
-                        inReject(inCode);
-                    }
-                });
-                lProcess.on('error', (inCode, inSignal) => {
-                    console.log('EXEC ERROR: ' + inPath + ' EXIT: ' + (inCode.toString()));
-                    console.log(`${inCode}, ${inSignal}`);
-                    inReject(inCode);
-                });
-            });
-        });
-    }
-    FileExists(inPath) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return new Promise((inResolve) => {
-                fs.access(inPath, fs.constants.R_OK, (inErr) => {
-                    inResolve(inErr ? false : true);
-                });
-            });
-        });
-    }
-    SwitchEnumValueType(e, v) {
-        if (_.isString(v)) {
-            v = v.toUpperCase();
-        }
-        return e[v];
-    }
+    });
+}
+function Serve(inArgs) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const lWebpackServerPath = './node_modules/webpack-dev-server/bin/webpack-dev-server.js';
+        const lTarget = inArgs._[0];
+        const lWebPackArgs = [
+            `--config ./source/${lTarget}/webpack.js`,
+            ...inArgs.v ? ['--verbose'] : [],
+            ...inArgs.r ? ['--env.concat', '--env.uglify'] : [],
+            `--host design-local.cricut.com`,
+            `--content-base ./dist`,
+            `--open`
+        ];
+        yield RunTerminal([`node ${lWebpackServerPath} ${lWebPackArgs.join(' ')}`], '.');
+    });
 }
 // WRAP MAIN IN ASYNC TO KICK OFF AWAIT CHAIN
 function _main() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const lBuilder = new Builder();
-            const lExitCode = yield lBuilder.Main(process.argv);
+            const lArgv = minimist(process.argv.slice(2), {
+                string: ['command', 'environment'],
+                alias: { c: 'command', r: 'release', e: 'environment', v: 'verbose' },
+                default: { release: false }
+            });
+            lArgv.v && console.log(lArgv);
+            lArgv.v && console.log('');
+            console.log(chalk_1.default.green(`COMMAND\t\t[${chalk_1.default.yellow(lArgv.c)}]`));
+            lArgv.e && console.log(chalk_1.default.green(`ENVIRONMENT\t[${chalk_1.default.yellow(lArgv.e)}]`));
+            console.log(chalk_1.default.green(`RELEASE\t\t[${chalk_1.default.yellow(lArgv.r)}]`));
+            lArgv._.length && console.log(chalk_1.default.green(`TARGET(S)\t[${chalk_1.default.yellow(lArgv._.join(', '))}]`));
+            console.log('');
+            if (lArgv.c === 'clean')
+                yield Clean(lArgv);
+            else if (lArgv.c === 'build')
+                yield Build(lArgv);
+            else if (lArgv.c === 'serve')
+                yield Serve(lArgv);
             console.log(``);
-            process.exitCode = lExitCode;
+            process.exitCode = 0;
         }
         catch (inErr) {
             if (inErr instanceof Error) {
