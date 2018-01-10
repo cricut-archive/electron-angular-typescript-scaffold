@@ -1,0 +1,34 @@
+language: c++
+
+env:
+  global:
+#  - secure: iKhTSJ59bpOeSuTZ68onvvGt9uTzsOC5JH6K8pSKCEfMeLFinJ+gDuSuwbBNNmXjDmB/ko27FZ/J3GtyQU+lNx5NbbdBQR7MPX2ziwX4/y0gWOLeusa5PQJNG56HRBeLZEALYRXauo4Cs3u5AcMIpDJKX2K9IgG7fEPonl5heRfSMF58tYIYFy35jrCLKgJJkvW8RLGVjmVQtoxGXc5/SdPHen0wgt1iPETUBf2p2OblQywKgCPdftNkFn2bdY6m+HzbuT3oSxYWFiRQTtLppmdNqhPaaOdIDHbd0/i0eI7OTD5Hs6LRbeOkhvYEB6ob+XjQjOSDhBEkelFdc50dNwulpyo/0cbpLD2Ph9G1jmjPmdg5Ziz1ktPydNDzDehkhmtYbJAn2pQWTKsatuuiLFZgOCnLanReDi7xIDub4A9Z6XJq2Upl2WK1wXhhyZTtsX+hNLYoRRGHLZJySWLUu0jgSZsg8XnngqgAoP8AGA4SdqNgdfbk96j9pYMehOBIzquqW2cdBU90TSiq4x5UQoSVkYYAU67E2fwjYUC51mZuI/+qMt1/X7N/0kjv5Fh0GSXH/qQ2dZmpo6BsUYdzXi14ovdUiIDZ0UBi+it9RiuiETE3S3jRWokF8MdcfNjoB/hRnulmlS89B+yZLTNpbL92j2421ge6LMo6qiNM8bo=
+
+os:
+- osx
+
+matrix:
+  include:
+  - os: osx
+    env: COMPILER=clang++
+
+before_install:
+- rm -rf ~/.nvm
+- git clone --depth 1 https://github.com/creationix/nvm.git ~/.nvm
+- source ~/.nvm/nvm.sh && nvm install 9 && nvm use 9
+
+before_script:
+- npm --version
+- node --version
+- npm install -d
+
+script:
+- echo '.'
+
+- echo 'Building...' && echo -en 'travis_fold:start:script.1\\r'
+- npm run build -- vendor app-basic-test
+- echo -en 'travis_fold:end:script.1\\r'
+
+- echo 'Testing...' && echo -en 'travis_fold:start:script.2\\r'
+#- ./_build/Release/libCricutCommonTest -s
+- echo -en 'travis_fold:end:script.2\\r'
