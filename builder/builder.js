@@ -25,7 +25,7 @@ function RunTerminal(inCommands, inCWD) {
             lTerminal = child_process.spawn(lCmd, undefined, { cwd: inCWD, stdio: 'inherit', shell: true });
         }
         else
-            throw new Error('Unhandled OS type.');
+            throw new Error(`Unhandled OS '${chalk_1.default.yellow(os.type())}'.`);
         lTerminal.on('close', (inCode) => (inCode === 0) ? inResolve() : inReject());
     });
 }

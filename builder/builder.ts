@@ -19,7 +19,7 @@ function RunTerminal(inCommands: string[], inCWD: string) {
                 const lCmd = inCommands.join(' && ');
                 lTerminal = child_process.spawn(lCmd, undefined,
                     { cwd: inCWD, stdio: 'inherit', shell: true });               
-            } else throw new Error('Unhandled OS type.')
+            } else throw new Error(`Unhandled OS '${chalk.yellow(os.type())}'.`)
         
             lTerminal.on('close', (inCode: number) => (inCode === 0) ? inResolve(): inReject());
         }); 
