@@ -9,28 +9,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const child_process = require("child_process");
-const os = require("os");
 const chalk_1 = require("chalk");
 const minimist = require("minimist");
-function RunTerminal(inCommands, inCWD) {
+function RunTerminal(inScript, inArgs, inCWD) {
     return new Promise((inResolve, inReject) => {
-        inCommands.map(l => console.log(chalk_1.default.yellow(l)));
-        let lTerminal;
-        if (os.type() === 'Windows_NT') {
-            const lCmd = '\" ' + inCommands.join(' && ') + ' \"';
-            lTerminal = child_process.spawn('cmd.exe', ['/S', '/C', lCmd], { cwd: inCWD, stdio: 'inherit', windowsVerbatimArguments: true });
-        }
-        else {
-            const lCmd = inCommands.join(' && ');
-            lTerminal = child_process.spawn(lCmd, undefined, { cwd: inCWD, stdio: 'inherit', shell: true });
-        }
+        console.log(chalk_1.default.yellow(`node ${inScript} ${inArgs.join(' ')}`));
+        let lTerminal = child_process.fork(inScript, inArgs);
         lTerminal.on('close', (inCode) => (inCode === 0) ? inResolve() : inReject());
     });
 }
 function Clean(inArgs) {
     return __awaiter(this, void 0, void 0, function* () {
         const lRimRafPath = './node_modules/rimraf/bin.js';
-        yield RunTerminal([`node ${lRimRafPath} dist/*`], '.');
+        yield RunTerminal(lRimRafPath, ['dist/*'], '.');
     });
 }
 function Build(inArgs) {
@@ -45,7 +36,7 @@ function Build(inArgs) {
                 ...inArgs.r ? ['--env.concat', '--env.uglify'] : [],
                 '--bail', '--colors'
             ];
-            yield RunTerminal([`node ${lWebpackPath} ${lWebPackArgs.join(' ')}`], '.');
+            yield RunTerminal(lWebpackPath, lWebPackArgs, '.');
         }
     });
 }
@@ -61,7 +52,7 @@ function Serve(inArgs) {
             `--content-base ./dist`,
             `--open`
         ];
-        yield RunTerminal([`node ${lWebpackServerPath} ${lWebPackArgs.join(' ')}`], '.');
+        yield RunTerminal(lWebpackServerPath, lWebPackArgs, '.');
     });
 }
 // WRAP MAIN IN ASYNC TO KICK OFF AWAIT CHAIN

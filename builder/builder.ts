@@ -6,28 +6,17 @@ import * as _ from 'lodash';
 import chalk from 'chalk';
 import * as minimist from 'minimist';
 
-function RunTerminal(inCommands: string[], inCWD: string) {
+function RunTerminal(inScript: string, inArgs: string[], inCWD: string) {
     return new Promise((inResolve, inReject) => {
-            inCommands.map(l => console.log(chalk.yellow(l)));
-            let lTerminal: child_process.ChildProcess;
-
-            if (os.type() === 'Windows_NT') {
-                const lCmd = '\" ' + inCommands.join(' && ') + ' \"';
-                lTerminal = child_process.spawn('cmd.exe', ['/S', '/C', lCmd], 
-                    { cwd: inCWD, stdio: 'inherit', windowsVerbatimArguments: true });
-            } else {
-                const lCmd = inCommands.join(' && ');
-                lTerminal = child_process.spawn(lCmd, undefined,
-                    { cwd: inCWD, stdio: 'inherit', shell: true });               
-            }
-        
+            console.log(chalk.yellow(`node ${inScript} ${inArgs.join(' ')}`));
+            let lTerminal: child_process.ChildProcess = child_process.fork(inScript, inArgs);
             lTerminal.on('close', (inCode: number) => (inCode === 0) ? inResolve(): inReject());
-        }); 
+    }); 
 }
 
 async function Clean(inArgs: minimist.ParsedArgs) {
     const lRimRafPath:string = './node_modules/rimraf/bin.js';
-    await RunTerminal([`node ${lRimRafPath} dist/*`], '.');   
+    await RunTerminal(lRimRafPath, ['dist/*'], '.');   
 }
 
 async function Build(inArgs: minimist.ParsedArgs) {
@@ -42,7 +31,7 @@ async function Build(inArgs: minimist.ParsedArgs) {
                 ... inArgs.r? ['--env.concat', '--env.uglify'] : [],
                 '--bail', '--colors'];  
         
-        await RunTerminal([`node ${lWebpackPath} ${lWebPackArgs.join(' ')}`], '.'); 
+        await RunTerminal(lWebpackPath, lWebPackArgs, '.'); 
     }
 }
 
@@ -57,7 +46,8 @@ async function Serve(inArgs: minimist.ParsedArgs) {
         `--content-base ./dist`,  
         `--open`
     ];
-    await RunTerminal([`node ${lWebpackServerPath} ${lWebPackArgs.join(' ')}`], '.'); 
+
+    await RunTerminal(lWebpackServerPath, lWebPackArgs, '.');
 }
 
 
