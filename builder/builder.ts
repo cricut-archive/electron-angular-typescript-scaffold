@@ -15,7 +15,7 @@ function RunTerminal(inCommands: string[], inCWD: string) {
                 const lCmd = '\" ' + inCommands.join(' && ') + ' \"';
                 lTerminal = child_process.spawn('cmd.exe', ['/S', '/C', lCmd], 
                     { cwd: inCWD, stdio: 'inherit', windowsVerbatimArguments: true });
-            } else if (os.type() === 'Darwin') {
+            } else if ((os.type() === 'Darwin') || (os.type() === 'Linux')) {
                 const lCmd = inCommands.join(' && ');
                 lTerminal = child_process.spawn(lCmd, undefined,
                     { cwd: inCWD, stdio: 'inherit', shell: true });               
