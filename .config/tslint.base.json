@@ -1,0 +1,25 @@
+{
+    "defaultSeverity": "error",
+    "extends": [
+        "tslint:recommended"
+    ],
+    "jsRules": {},
+    "rules": {
+        "quotemark": [true, "single", "avoid-escape", "avoid-template"],
+        "semicolon": [true, "always"],
+        "class-name":false,
+        "member-ordering": [
+            true,
+            {
+              "order": [
+                "static-field",
+                "instance-field",
+                "constructor",
+                "static-method",
+                "instance-method"
+              ]
+            }
+          ]
+    },
+    "rulesDirectory": []
+}

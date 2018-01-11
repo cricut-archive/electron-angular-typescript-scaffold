@@ -3,11 +3,10 @@ module.exports = module.exports = function(inArgs) {
     const lUglify = (inArgs && inArgs.uglify); //--env.uglify
     const lConcat = (inArgs && inArgs.concat); //--env.concat
 
-    inArgs.appName = 'app-basic-test';
-    inArgs.libNames = ['lib-common'];
+    inArgs.appName = 'lib-common';
 
     inArgs.vendorPath = lConcat ? '' : 'vendor/';
-    inArgs.vendorDlls = lConcat ? ['vendor'] : ['angular', 'bowser', 'lodash', 'typescript'];
+    inArgs.vendorDlls = lConcat ? ['vendor'] : ['lodash', 'typescript'];
 
-    return require('../../.config/webpack.webapp')(inArgs);
+    return require('../../.config/webpack.library')(inArgs);
 }

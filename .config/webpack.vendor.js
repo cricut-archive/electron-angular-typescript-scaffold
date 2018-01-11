@@ -9,7 +9,8 @@ module.exports = function(inArgs) {
   let lVendorEntry = {
     'angular': ['angular', 'angular-cookies', '@uirouter/angularjs'],
     'bowser': ['bowser'],
-    'lodash': ['lodash']
+    'lodash': ['lodash'],
+    'typescript': ['tslib']
   };
 
   //FLATTEN LIST OUR FOR CONCAT FILE

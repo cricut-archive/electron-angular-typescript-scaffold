@@ -1,11 +1,13 @@
+
+// tslint:disable-next-line
 interface Number {
-    roundDecimal(inPlace: number): number;
+    RoundDecimal(inPlace: number): number;
 }
 
-if (!Number.prototype.roundDecimal) {
-    Number.prototype.roundDecimal = function(inPlace: number): number {
-        var lShift: number = Math.pow(10, inPlace);
-        var lResult: number = Math.round((Number(this) + 0.00001) * lShift) / lShift;
+if (!Number.prototype.RoundDecimal) {
+    Number.prototype.RoundDecimal = function(inPlace: number): number {
+        const lShift: number = Math.pow(10, inPlace);
+        const lResult: number = Math.round((Number(this) + 0.00001) * lShift) / lShift;
         return lResult;
     };
 }

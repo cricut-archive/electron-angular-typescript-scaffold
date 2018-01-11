@@ -1,5 +1,6 @@
 const path = require("path");
 const webpack = require("webpack");
+const _ = require('lodash');
 
 const webpackPluginHtml = require('html-webpack-plugin');
 
@@ -10,6 +11,10 @@ module.exports = function(inArgs) {
     const lConcat = (inArgs && inArgs.concat); //--env.concat
     
     const lAppPath = ['.', 'source', inArgs.appName].join('/');
+    
+    const lEntry = {};
+    lEntry[_.camelCase(inArgs.appName)] = [lAppPath + "/index.ts"];
+    //inArgs.libNames.map(l => lEntry[_.camelCase(l)] = ['.', 'source', l, 'index.ts'].join('/')  );
     
     const lVendorPath = path.normalize(path.resolve(__dirname, '..', 'dist', 'js', inArgs.vendorPath));
     const lVendorDllPlugin = inArgs.vendorDlls.map(v => new webpack.DllReferencePlugin({ manifest: require(path.resolve(lVendorPath, v +'.dll.json')) }));
@@ -23,14 +28,14 @@ module.exports = function(inArgs) {
     return  {
 
         context: path.normalize(__dirname + '/..'),
-
-        entry: {
-            'app': [lAppPath + "/index.ts"]
-        },
+        
+        entry: lEntry,
         
         resolve: { 
-            extensions: ['.ts', '.js']
+            extensions: ['.ts', '.js'],
+            //alias: { 'lib-common': [__dirname, '..', 'source', 'lib-common'].join('/') }
         },
+        
         resolveLoader: {
             modules: ['node_modules', path.join(__dirname, 'plugin')] //LOAD OUR CUSTOM LOADERS
          },
@@ -70,7 +75,7 @@ module.exports = function(inArgs) {
                 tslint: path.resolve(lAppPath + '/tslint.json'),
                 diagnosticFormatter: "codeframe", // "ts-loader", "stylish", "codeframe",
                 workers: 2
-              })
+            })
         
         ]
     };
