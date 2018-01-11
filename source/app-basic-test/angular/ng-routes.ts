@@ -12,9 +12,9 @@ export class ngRoutes {
             url: '^/landing',
             views: {
                 '': this.ViewBuilder('HomeLanding', this.mModuleName, true),
+                'footer@home': {},
                 'sidebar-left@home': {},
                 'sidebar-right@home': {},
-                'footer@home': {},
             },
         });
     }

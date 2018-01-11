@@ -7,8 +7,6 @@
     "clean": "node builder/builder.js -c clean",
     "build": "node builder/builder.js -c build",
     "serve": "node builder/builder.js -c serve",
-
-
     "_clean": "node builder/builder.js -a clean",
     "_build": "node builder/builder.js build",
     "_rebuild": "node builder/builder.js rebuild",
@@ -39,7 +37,7 @@
     "minimist": "^1.2.0",
     "rimraf": "2.6.2",
     "ts-loader": "3.2.0",
-    "tslint": "5.8.0",
+    "tslint": "5.9.1",
     "tslint-loader": "3.5.3",
     "typescript": "2.6.2",
     "webpack": "3.10.0",
