@@ -47,8 +47,8 @@ module.exports = function(inArgs) {
 
         output: {
             path: path.join(__dirname, '..', 'dist', 'js'),
-            filename: "[name].js",
-            library: "[name]"
+            filename: "[name].dll.js",
+            library: "[name]Dll"
         },
 
         devtool: 'source-map',
@@ -60,8 +60,12 @@ module.exports = function(inArgs) {
             ...lUglifyPlugin,
 
             new dtsBundler({
-                path: './',
                 filename: _.camelCase(inArgs.appName) + '.d.ts'
+            }),
+
+            new webpack.DllPlugin({
+                path: path.resolve( 'dist', 'js', '[name].dll.json'),
+                name: '[name]Dll'
             })
         
         ]

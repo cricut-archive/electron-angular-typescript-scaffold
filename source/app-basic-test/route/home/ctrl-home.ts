@@ -2,7 +2,7 @@ import { ILogService, IScope } from 'angular';
 import { ngModule } from '../../angular/ng-module';
 import { ngRegister } from '../../angular/ng-register';
 
-// import { Point } from 'lib-common/point';
+import { Rect } from 'lib-common';
 
 export class ctrlHome {
     public static $tsName: string =
@@ -11,8 +11,7 @@ export class ctrlHome {
     constructor(private $log: ILogService, private $scope: IScope) {
         this.$log.debug(`+ ${ctrlHome.$tsName}`);
 
-        // const lPoint: Point = new Point(0, 0);
-        // lPoint.Clone();
+        const lRect = new Rect();
 
         this.$scope.$on('$destroy', () => {
             this.$log.debug(`- ${ctrlHome.$tsName}`);

@@ -4,7 +4,6 @@ const _ = require("lodash");
 var dtsBundler = ( () => {
     function dtsBundler(options) {
         options = options || {};
-        this.path = options.path || '';
         this.filename = options.filename || '';
     }
 
@@ -25,7 +24,7 @@ var dtsBundler = ( () => {
             var combinedDeclaration = _this.generateCombinedDeclaration(declarationFiles);
 
             //and insert that back into the assets
-            compilation.assets[_this.path + '/' + _this.filename] = {
+            compilation.assets[_this.filename] = {
                 source: function () {
                     return combinedDeclaration;
                 },
