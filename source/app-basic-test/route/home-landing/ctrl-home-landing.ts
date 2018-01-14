@@ -2,6 +2,8 @@ import { ILogService, IScope } from 'angular';
 import { ngModule } from '../../angular/ng-module';
 import { ngRegister } from '../../angular/ng-register';
 
+import { Rect } from 'lib-common/rect';
+
 export class ctrlHomeLanding {
 
     public static $tsName: string = ngRegister.Add(
@@ -9,6 +11,9 @@ export class ctrlHomeLanding {
 
     constructor(private $log: ILogService, private $scope: IScope ) {
         $log.debug(`+ ${ctrlHomeLanding.$tsName}`);
+
+        const lRect = new Rect();
+        lRect.Expand(5);
 
         this.$scope.$on('$destroy', () => {
             this.$log.debug(`- ${ctrlHomeLanding.$tsName}`);

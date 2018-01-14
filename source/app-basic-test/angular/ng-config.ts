@@ -10,6 +10,8 @@ export class ngConfig {
     constructor(inModule: IModule) {
         inModule.config(['$stateProvider', '$urlRouterProvider',
             ($stateProvider: StateProvider, $urlRouterProvider: UrlRouterProvider) => {
+                console.debug('ANGULAR: ngConfig()');
+
                 // REGISTER ALL ROUTES
                 this.mRoutes = new ngRoutes(inModule.name, $stateProvider, $urlRouterProvider);
              },

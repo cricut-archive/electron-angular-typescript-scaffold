@@ -8,11 +8,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const path = require("path");
 const child_process = require("child_process");
 const fs = require("fs");
+const _ = require("lodash");
 const chalk_1 = require("chalk");
 const minimist = require("minimist");
 const opn = require("opn");
+const express = require("express");
+const chokidar = require("chokidar");
+const log = console.log.bind(console);
 function RunTerminal(inScript, inArgs, inCWD, inCaptureOutput) {
     return new Promise((inResolve, inReject) => {
         console.log(chalk_1.default.yellow(`node ${inScript} ${inArgs.join(' ')}`));
@@ -48,19 +53,59 @@ function Build(inArgs) {
         }
     });
 }
+function Watch(inArgs) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const lWatchers = [];
+        const lBuildTargets = [];
+        let lBuilding = false;
+        const lBuildTarget = (inFromComplete) => {
+            if (!inFromComplete && lBuilding)
+                return;
+            lBuilding = true;
+            const lTarget = lBuildTargets.shift();
+            if (!lTarget) {
+                lBuilding = false;
+                return;
+            }
+            _.pull(lBuildTargets, lTarget);
+            const lArgs = _.cloneDeep(inArgs);
+            lArgs._ = [lTarget];
+            console.log(`BUILDING:\t[${lTarget}]`);
+            Build(lArgs).then(() => lBuildTarget(true));
+        };
+        const lBuildTargetDB = _.debounce(lBuildTarget, 2000);
+        for (let i = 0; i < inArgs._.length; i++) {
+            const lTarget = inArgs._[i];
+            if (lTarget === 'vendor')
+                continue;
+            const lWatcher = chokidar.watch(`./source/${lTarget}`);
+            lWatcher.on('raw', (inEvent, inPath, inDetails) => {
+                console.log(`CHANGE:\t[${lTarget}]\t[${chalk_1.default.yellow(inEvent)}]\t'${chalk_1.default.yellow(inPath)}'`);
+                lBuildTargets.push(lTarget);
+                lBuildTargetDB(false);
+            });
+            lWatchers.push(lWatcher);
+        }
+        //LOCK FUNCTION
+        yield new Promise(() => { });
+    });
+}
 function Serve(inArgs) {
     return __awaiter(this, void 0, void 0, function* () {
-        const lWebpackServerPath = './node_modules/webpack-dev-server/bin/webpack-dev-server.js';
-        const lTarget = inArgs._[0];
-        const lWebPackArgs = [
-            '--config', `./source/${lTarget}/webpack.js`,
-            ...inArgs.v ? ['--verbose'] : [],
-            ...inArgs.r ? ['--env.concat', '--env.uglify'] : [],
-            '--host', 'design-local.cricut.com',
-            '--content-base', './dist',
-            '--open'
-        ];
-        yield RunTerminal(lWebpackServerPath, lWebPackArgs, '.', false);
+        yield Build(inArgs);
+        Watch(inArgs);
+        return new Promise((inResolve, inReject) => {
+            const lExpress = express();
+            console.log(path.join(__dirname, '..', 'dist'));
+            lExpress.use((req, res, next) => {
+                console.log(`${req.method}\t${req.url}`);
+                next();
+            });
+            lExpress.use(express.static(path.join(__dirname, '..', 'dist')));
+            const lServer = lExpress.listen(9000, 'design-local.cricut.com', function () {
+                console.log(`Listening http://${lServer.address().address}:${lServer.address().port}`);
+            });
+        });
     });
 }
 function Profile(inArgs) {
@@ -100,6 +145,8 @@ function _main() {
                 yield Clean(lArgv);
             else if (lArgv.c === 'build')
                 yield Build(lArgv);
+            else if (lArgv.c === 'watch')
+                yield Watch(lArgv);
             else if (lArgv.c === 'serve')
                 yield Serve(lArgv);
             else if (lArgv.c === 'profile')

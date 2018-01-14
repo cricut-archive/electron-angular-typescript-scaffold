@@ -11,6 +11,8 @@ export class ngModule {
     private mRun: ngRun;
 
     public constructor() {
+        console.debug('ANGULAR: ngModule()');
+
         this.mModule = module('appBasicTest', ['ui.router']);
         this.mConfig = new ngConfig(this.mModule);
         this.mRun = new ngRun(this.mModule);

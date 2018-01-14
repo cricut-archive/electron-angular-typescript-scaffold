@@ -7,13 +7,12 @@
 </head>
 
 <body>
-  <p>{{1+1}} = 2</p>
-  <p id='name'>???</p>
+  <div ui-view>Loading...</div>
   
-<% for (key in htmlWebpackPlugin.options.vendor) { %>
-  <script type="text/javascript" src="<%= htmlWebpackPlugin.options.vendor[key] %>"></script>
-<% } for (key in htmlWebpackPlugin.files.js) { %>
-  <script defer type="text/javascript" src="<%= htmlWebpackPlugin.files.js[key] %>"></script>
+  
+<% for (key in htmlWebpackPlugin.options.vendor) { %><script type="text/javascript" src="<%= htmlWebpackPlugin.options.vendor[key] %>"></script>
+<% } for (key in htmlWebpackPlugin.options.library) { %><script type="text/javascript" src="<%= htmlWebpackPlugin.options.library[key] %>"></script>  
+<% } for (key in htmlWebpackPlugin.files.js) { %><script defer type="text/javascript" src="<%= htmlWebpackPlugin.files.js[key] %>"></script>
 <% } %>
 </body>
 

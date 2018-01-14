@@ -12,7 +12,7 @@ export class ngTemplates {
     ];
 
     public RegisterTemplates($templateCache: ITemplateCacheService): void {
-
+        console.debug('ANGULAR: ngTemplates::RegisterTemplates()');
         _.map(this.mTemplates, (t) => $templateCache.put(t.Path.split('/').slice(2).join('/'), t.Data));
     }
 

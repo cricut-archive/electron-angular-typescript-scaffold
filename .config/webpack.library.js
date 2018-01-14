@@ -47,7 +47,7 @@ module.exports = function(inArgs) {
 
         output: {
             path: path.join(__dirname, '..', 'dist', 'js'),
-            filename: "[name].dll.js",
+            filename: inArgs.appName + ".dll.js",
             library: "[name]Dll"
         },
 
@@ -60,11 +60,11 @@ module.exports = function(inArgs) {
             ...lUglifyPlugin,
 
             new dtsBundler({
-                filename: _.camelCase(inArgs.appName) + '.d.ts'
+                filename: inArgs.appName + '.d.ts'
             }),
 
             new webpack.DllPlugin({
-                path: path.resolve( 'dist', 'js', '[name].dll.json'),
+                path: path.resolve( 'dist', 'js', inArgs.appName + '.dll.json'),
                 name: '[name]Dll'
             })
         

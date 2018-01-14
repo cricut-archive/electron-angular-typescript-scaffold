@@ -6,6 +6,10 @@ import * as _ from 'lodash';
 import chalk from 'chalk';
 import * as minimist from 'minimist';
 import opn = require('opn');
+import * as express from 'express';
+import * as chokidar from 'chokidar';
+
+const log: (message?: any, ...optionalParams: any[]) => void = console.log.bind(console);
 
 function RunTerminal(inScript: string, inArgs: string[], inCWD: string, inCaptureOutput: boolean): Promise<string> {
     return new Promise((inResolve, inReject) => {
@@ -43,19 +47,66 @@ async function Build(inArgs: minimist.ParsedArgs) {
     }
 }
 
-async function Serve(inArgs: minimist.ParsedArgs) {
-    const lWebpackServerPath:string = './node_modules/webpack-dev-server/bin/webpack-dev-server.js';
-    const lTarget = inArgs._[0];
-    const lWebPackArgs: string[] = [
-        '--config', `./source/${lTarget}/webpack.js`, 
-        ... inArgs.v? ['--verbose'] : [],
-        ... inArgs.r? ['--env.concat', '--env.uglify'] : [],
-        '--host', 'design-local.cricut.com', 
-        '--content-base', './dist',  
-        '--open'
-    ];
+async function Watch(inArgs: minimist.ParsedArgs) {
+    
+    const lWatchers: chokidar.FSWatcher[] = [];
+    const lBuildTargets: string[] = [];
+    let lBuilding: boolean = false;
 
-    await RunTerminal(lWebpackServerPath, lWebPackArgs, '.', false);
+    const lBuildTarget = (inFromComplete: boolean) => {
+        if (!inFromComplete && lBuilding) return;
+        lBuilding = true;
+
+        const lTarget = lBuildTargets.shift();
+        if (!lTarget) {
+            lBuilding = false;
+            return;
+        }
+        
+        _.pull(lBuildTargets, lTarget);
+        const lArgs = _.cloneDeep(inArgs);
+        lArgs._ = [lTarget];
+        console.log(`BUILDING:\t[${lTarget}]`);
+        Build(lArgs).then( () => lBuildTarget(true));
+    };
+    const lBuildTargetDB = _.debounce(lBuildTarget, 2000);
+
+    for(let i=0; i < inArgs._.length; i++) {
+        const lTarget = inArgs._[i];
+        if (lTarget === 'vendor') continue;
+
+        const lWatcher = chokidar.watch(`./source/${lTarget}`);
+        lWatcher.on('raw', (inEvent, inPath, inDetails) => {
+            console.log(`CHANGE:\t[${lTarget}]\t[${chalk.yellow(inEvent)}]\t'${chalk.yellow(inPath)}'`);
+            lBuildTargets.push(lTarget);
+            lBuildTargetDB(false);
+        });
+
+        lWatchers.push(lWatcher);
+    }
+ 
+    //LOCK FUNCTION
+    await new Promise(()=>{});
+}
+
+async function Serve(inArgs: minimist.ParsedArgs) {
+    await Build(inArgs);
+    Watch(inArgs);
+
+    return new Promise<void>((inResolve, inReject) => {
+        const lExpress = express();
+
+        console.log(path.join(__dirname, '..', 'dist'));
+        lExpress.use((req, res, next) => {
+            console.log(`${req.method}\t${req.url}`);
+            next();
+        });
+        lExpress.use(express.static(path.join(__dirname, '..', 'dist')));
+    
+        const lServer = lExpress.listen(9000, 'design-local.cricut.com', function () {
+            console.log(`Listening http://${lServer.address().address}:${lServer.address().port}`);
+        });
+    });
 }
 
 async function Profile(inArgs: minimist.ParsedArgs) {
@@ -97,6 +148,7 @@ async function _main() {
         
         if (lArgv.c === 'clean') await Clean(lArgv);
         else if (lArgv.c === 'build') await Build(lArgv);
+        else if (lArgv.c === 'watch') await Watch(lArgv);
         else if (lArgv.c === 'serve') await Serve(lArgv);
         else if (lArgv.c === 'profile') await Profile(lArgv);
         

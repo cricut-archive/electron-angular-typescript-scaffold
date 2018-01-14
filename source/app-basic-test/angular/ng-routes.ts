@@ -4,17 +4,21 @@ export class ngRoutes {
     constructor(private readonly mModuleName: string,
                 private $stateProvider: StateProvider,
                 private $urlRouterProvider: UrlRouterProvider) {
+        console.debug('ANGULAR: ngRoutes()');
+
         // SET DEFAULT ROUTE
         this.$urlRouterProvider.otherwise('/landing');
 
-        $stateProvider.state('home', { url: '/home' });
+        $stateProvider.state('home', {
+            url: '/home',
+            views: {
+                '': this.ViewBuilder('Home', this.mModuleName, true),
+            },
+        });
         $stateProvider.state('home.landing', {
             url: '^/landing',
             views: {
                 '': this.ViewBuilder('HomeLanding', this.mModuleName, true),
-                'footer@home': {},
-                'sidebar-left@home': {},
-                'sidebar-right@home': {},
             },
         });
     }

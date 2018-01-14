@@ -12,11 +12,23 @@ module.exports = function(inArgs) {
     
     const lEntry = {};
     lEntry[_.camelCase(inArgs.appName)] = [lAppPath + "/index.ts"];
-    //inArgs.libNames.map(l => lEntry[_.camelCase(l)] = ['.', 'source', l, 'index.ts'].join('/')  );
     
     const lVendorPath = path.normalize(path.resolve(__dirname, '..', 'dist', 'js', inArgs.vendorPath));
-    const lVendorDllPlugin = inArgs.vendorDlls.map(v => new webpack.DllReferencePlugin({ manifest: require(path.resolve(lVendorPath, v +'.dll.json')) }));
+    const lVendorDllPlugin = inArgs.vendorDlls.map(v => new webpack.DllReferencePlugin({ 
+        manifest: require(path.resolve(lVendorPath, v +'.dll.json')) 
+    }));
     const lVendorScriptInclude = inArgs.vendorDlls.map(v => 'js/' + (inArgs.vendorPath) + v + '.dll.js');
+
+    const lLibraryPath = path.normalize(path.resolve(__dirname, '..', 'dist', 'js'));
+    const lLibraryDllPlugin = inArgs.libraryDlls.map(v => new webpack.DllReferencePlugin({ 
+        manifest: require(path.resolve(lLibraryPath, v +'.dll.json')),
+        //scope: v
+    }));
+    const lLibraryScriptInclude = inArgs.libraryDlls.map(v => 'js/' + v + '.dll.js');
+    
+    const lAlias = {};
+    //inArgs.libraryDlls.map(v => lAlias[v] = path.resolve(__dirname, '..', 'dist', 'js', v + '.dll.js'));
+    //console.log(lAlias);
 
     //ADD UGLIFY PLUGIN IF SET
     const lUglifyPlugin = lUglify ? [
@@ -30,7 +42,8 @@ module.exports = function(inArgs) {
         entry: lEntry,
         
         resolve: { 
-            extensions: ['.ts', '.js']
+            extensions: ['.ts', '.js'],
+            modules: ['node_modules', path.join(__dirname, '..', 'source')]
         },
         
         resolveLoader: {
@@ -47,7 +60,7 @@ module.exports = function(inArgs) {
 
         output: {
             path: path.join(__dirname, '..', 'dist', 'js'),
-            filename: "[name].js",
+            filename: inArgs.appName + ".js",
             library: "[name]"
         },
 
@@ -57,6 +70,8 @@ module.exports = function(inArgs) {
 
             ...lVendorDllPlugin,
 
+            ...lLibraryDllPlugin,
+
             ...lUglifyPlugin,
 
             new webpackPluginHtml({
@@ -64,7 +79,8 @@ module.exports = function(inArgs) {
                 filename: '../index.html',
                 template: lAppPath + '/index.html',
                 inject: false,
-                vendor: lVendorScriptInclude
+                vendor: lVendorScriptInclude,
+                library: lLibraryScriptInclude
             })
         
         ]
