@@ -30,7 +30,7 @@ module.exports = function(inSource) {
             Promise.all(lFileReadPromise).then( (inTemplateData) => {
 
                 let lTemplateLines = [];
-                inTemplateData.map(t => lTemplateLines.push(JSON.stringify(t)));
+                inTemplateData.map(t => lTemplateLines.push(`\t{ Path: '${t.Path}',\n\tData: '${t.Data}' }`));
                 
                 inSource = inSource.replace(/^.*@@AUTO GENERATED TEMPLATES/m, lTemplateLines.join(',\n'));
 
