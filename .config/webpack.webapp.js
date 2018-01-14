@@ -21,15 +21,10 @@ module.exports = function(inArgs) {
 
     const lLibraryPath = path.normalize(path.resolve(__dirname, '..', 'dist', 'js'));
     const lLibraryDllPlugin = inArgs.libraryDlls.map(v => new webpack.DllReferencePlugin({ 
-        manifest: require(path.resolve(lLibraryPath, v +'.dll.json')),
-        //scope: v
+        manifest: require(path.resolve(lLibraryPath, v +'.dll.json'))
     }));
     const lLibraryScriptInclude = inArgs.libraryDlls.map(v => 'js/' + v + '.dll.js');
     
-    const lAlias = {};
-    //inArgs.libraryDlls.map(v => lAlias[v] = path.resolve(__dirname, '..', 'dist', 'js', v + '.dll.js'));
-    //console.log(lAlias);
-
     //ADD UGLIFY PLUGIN IF SET
     const lUglifyPlugin = lUglify ? [
         new webpack.optimize.UglifyJsPlugin({ beautify: false, comments: false })
