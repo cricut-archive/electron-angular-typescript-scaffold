@@ -34,7 +34,7 @@ function RunTerminal(inScript, inArgs, inCWD, inCaptureOutput) {
 function Clean(inArgs) {
     return __awaiter(this, void 0, void 0, function* () {
         const lRimRafPath = './node_modules/rimraf/bin.js';
-        yield RunTerminal(lRimRafPath, ['dist/*'], '.', false);
+        yield RunTerminal(lRimRafPath, ['_dist/*'], '.', false);
     });
 }
 function Build(inArgs) {
@@ -44,7 +44,7 @@ function Build(inArgs) {
             const lTarget = inArgs._[i];
             const lWebPackArgs = [
                 '--config',
-                (lTarget === 'vendor') ? './.config/webpack.vendor.js' : `./source/${lTarget}/webpack.js`,
+                (lTarget === 'vendor') ? './.config/webpack.vendor.js' : `./modules/${lTarget}/webpack.js`,
                 ...inArgs.v ? ['--verbose'] : [],
                 ...inArgs.r ? ['--env.concat', '--env.uglify'] : [],
                 '--bail', '--colors'
@@ -78,7 +78,7 @@ function Watch(inArgs) {
             const lTarget = inArgs._[i];
             if (lTarget === 'vendor')
                 continue;
-            const lWatcher = chokidar.watch(`./source/${lTarget}`);
+            const lWatcher = chokidar.watch(`./modules/${lTarget}`);
             lWatcher.on('raw', (inEvent, inPath, inDetails) => {
                 console.log(`CHANGE:\t[${lTarget}]\t[${chalk_1.default.yellow(inEvent)}]\t'${chalk_1.default.yellow(inPath)}'`);
                 lBuildTargets.push(lTarget);
@@ -96,12 +96,18 @@ function Serve(inArgs) {
         Watch(inArgs);
         return new Promise((inResolve, inReject) => {
             const lExpress = express();
-            console.log(path.join(__dirname, '..', 'dist'));
             lExpress.use((req, res, next) => {
-                console.log(`${req.method}\t${req.url}`);
+                res.on('finish', () => {
+                    const lDate = new Date();
+                    const lDateStr = `${lDate.getHours()}:${lDate.getMinutes()}:${lDate.getSeconds()}`;
+                    const lStatus = ((res.statusCode < 300) && chalk_1.default.green(String(res.statusCode)))
+                        || ((res.statusCode < 400) && chalk_1.default.cyan(String(res.statusCode)))
+                        || chalk_1.default.red(String(res.statusCode));
+                    console.log(`${lDateStr} ${lStatus} ${chalk_1.default.green(req.method)} ${chalk_1.default.yellow(req.url)}`);
+                });
                 next();
             });
-            lExpress.use(express.static(path.join(__dirname, '..', 'dist')));
+            lExpress.use(express.static(path.join(__dirname, '..', '_dist')));
             const lServer = lExpress.listen(9000, 'design-local.cricut.com', function () {
                 console.log(`Listening http://${lServer.address().address}:${lServer.address().port}`);
             });
@@ -114,15 +120,15 @@ function Profile(inArgs) {
         const lWebpackAnalyzer = './node_modules/webpack-bundle-analyzer/lib/bin/analyzer.js';
         const lTarget = inArgs._[0];
         const lWebPackArgs = [
-            '--config', (lTarget === 'vendor') ? './.config/webpack.vendor.js' : `./source/${lTarget}/webpack.js`,
+            '--config', (lTarget === 'vendor') ? './.config/webpack.vendor.js' : `./modules/${lTarget}/webpack.js`,
             '--profile',
             '--json'
         ];
         let lProfileData = yield RunTerminal(lWebpackPath, lWebPackArgs, '.', true);
         lProfileData = lProfileData.substr(lProfileData.indexOf('{', 0));
-        fs.writeFileSync(`./dist/${lTarget}.json`, lProfileData);
+        fs.writeFileSync(`./_dist/${lTarget}.json`, lProfileData);
         opn('http://webpack.github.com/analyse');
-        yield RunTerminal(lWebpackAnalyzer, [`./dist/${lTarget}.json`], '.', false);
+        yield RunTerminal(lWebpackAnalyzer, [`./_dist/${lTarget}.json`], '.', false);
     });
 }
 // WRAP MAIN IN ASYNC TO KICK OFF AWAIT CHAIN

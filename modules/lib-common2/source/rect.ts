@@ -1,6 +1,6 @@
 
-import {Point} from './point';
-import {Size} from './size';
+import {Point} from 'lib-common/point';
+import {Size} from 'lib-common/size';
 
 export class Rect {
     constructor(public mPoint: Point = new Point(), public mSize: Size = new Size()) {}

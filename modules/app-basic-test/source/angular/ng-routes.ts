@@ -32,7 +32,7 @@ export class ngRoutes {
         const lModuleName: string = inModuleName.replace(/\W+/g, '-')
                                                 .replace(/([a-z\d])([A-Z])/g, '$1-$2').toLowerCase();
 
-        lView.templateUrl = `${lModuleName}/${lTmplFolder}/${lViewDash}/tmpl-${lViewDash}.html`;
+        lView.templateUrl = `${lModuleName}/source/${lTmplFolder}/${lViewDash}/tmpl-${lViewDash}.html`;
         lView.controller = `ctrl${inViewName}`;
         lView.controllerAs = `ctrl${inViewName}`;
 

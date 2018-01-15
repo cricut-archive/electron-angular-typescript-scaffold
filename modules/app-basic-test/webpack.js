@@ -8,7 +8,7 @@ module.exports = module.exports = function(inArgs) {
     inArgs.vendorPath = lConcat ? '' : 'vendor/';
     inArgs.vendorDlls = lConcat ? ['vendor'] : ['angular', 'bowser', 'lodash', 'typescript'];
 
-    inArgs.libraryDlls = ['lib-common'];
+    inArgs.libNames = ['lib-common', 'lib-common2'];
 
     return require('../../.config/webpack.webapp')(inArgs);
 }

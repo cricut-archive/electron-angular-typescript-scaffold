@@ -34,7 +34,7 @@ module.exports = function(inArgs) {
     devtool: 'source-map',
 
     output: {
-      path: path.join(__dirname, '..', 'dist', 'js', lConcat ? '.' : 'vendor'),
+      path: path.join(__dirname, '..', '_dist', 'js', lConcat ? '.' : 'vendor'),
       filename: '[name].dll.js',
       library: '[name]Dll', //NEEDS TO MATCH DllPlugin NAME
     },
@@ -44,7 +44,7 @@ module.exports = function(inArgs) {
       ...lUglifyPlugin,
 
       new webpack.DllPlugin({
-        path: path.resolve( 'dist', 'js', lConcat ? '.' : 'vendor', '[name].dll.json'),
+        path: path.resolve( '_dist', 'js', lConcat ? '.' : 'vendor', '[name].dll.json'),
         name: '[name]Dll'
       })
     ]

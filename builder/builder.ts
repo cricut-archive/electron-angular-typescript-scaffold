@@ -28,7 +28,7 @@ function RunTerminal(inScript: string, inArgs: string[], inCWD: string, inCaptur
 
 async function Clean(inArgs: minimist.ParsedArgs) {
     const lRimRafPath:string = './node_modules/rimraf/bin.js';
-    await RunTerminal(lRimRafPath, ['dist/*'], '.', false);   
+    await RunTerminal(lRimRafPath, ['_dist/*'], '.', false);   
 }
 
 async function Build(inArgs: minimist.ParsedArgs) {
@@ -38,7 +38,7 @@ async function Build(inArgs: minimist.ParsedArgs) {
         const lTarget = inArgs._[i];
         const lWebPackArgs: string[] = [
                 '--config', 
-                (lTarget === 'vendor') ? './.config/webpack.vendor.js' : `./source/${lTarget}/webpack.js`,
+                (lTarget === 'vendor') ? './.config/webpack.vendor.js' : `./modules/${lTarget}/webpack.js`,
                 ... inArgs.v? ['--verbose'] : [],
                 ... inArgs.r? ['--env.concat', '--env.uglify'] : [],
                 '--bail', '--colors'];  
@@ -75,7 +75,7 @@ async function Watch(inArgs: minimist.ParsedArgs) {
         const lTarget = inArgs._[i];
         if (lTarget === 'vendor') continue;
 
-        const lWatcher = chokidar.watch(`./source/${lTarget}`);
+        const lWatcher = chokidar.watch(`./modules/${lTarget}`);
         lWatcher.on('raw', (inEvent, inPath, inDetails) => {
             console.log(`CHANGE:\t[${lTarget}]\t[${chalk.yellow(inEvent)}]\t'${chalk.yellow(inPath)}'`);
             lBuildTargets.push(lTarget);
@@ -96,12 +96,18 @@ async function Serve(inArgs: minimist.ParsedArgs) {
     return new Promise<void>((inResolve, inReject) => {
         const lExpress = express();
 
-        console.log(path.join(__dirname, '..', 'dist'));
         lExpress.use((req, res, next) => {
-            console.log(`${req.method}\t${req.url}`);
+            res.on('finish', ()=>{
+                const lDate = new Date();
+                const lDateStr = `${lDate.getHours()}:${lDate.getMinutes()}:${lDate.getSeconds()}`;
+                const lStatus = ((res.statusCode < 300) && chalk.green(String(res.statusCode)))
+                                || ((res.statusCode < 400) && chalk.cyan(String(res.statusCode)))
+                                || chalk.red(String(res.statusCode));
+                console.log(`${lDateStr} ${lStatus} ${chalk.green(req.method)} ${chalk.yellow(req.url)}`);
+            });
             next();
         });
-        lExpress.use(express.static(path.join(__dirname, '..', 'dist')));
+        lExpress.use(express.static(path.join(__dirname, '..', '_dist')));
     
         const lServer = lExpress.listen(9000, 'design-local.cricut.com', function () {
             console.log(`Listening http://${lServer.address().address}:${lServer.address().port}`);
@@ -115,17 +121,17 @@ async function Profile(inArgs: minimist.ParsedArgs) {
     const lTarget = inArgs._[0];
 
     const lWebPackArgs: string[] = [ 
-        '--config', (lTarget === 'vendor') ? './.config/webpack.vendor.js' : `./source/${lTarget}/webpack.js`, 
+        '--config', (lTarget === 'vendor') ? './.config/webpack.vendor.js' : `./modules/${lTarget}/webpack.js`, 
         '--profile', 
         '--json' ];
 
     let lProfileData = await RunTerminal(lWebpackPath, lWebPackArgs, '.', true);
     lProfileData = lProfileData.substr(lProfileData.indexOf('{', 0));
     
-    fs.writeFileSync(`./dist/${lTarget}.json`, lProfileData);
+    fs.writeFileSync(`./_dist/${lTarget}.json`, lProfileData);
 
     opn('http://webpack.github.com/analyse');
-    await RunTerminal(lWebpackAnalyzer, [`./dist/${lTarget}.json`], '.', false);
+    await RunTerminal(lWebpackAnalyzer, [`./_dist/${lTarget}.json`], '.', false);
 }
 
 

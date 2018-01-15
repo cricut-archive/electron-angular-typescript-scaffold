@@ -2,7 +2,7 @@ import { ILogService, IScope } from 'angular';
 import { ngModule } from '../../angular/ng-module';
 import { ngRegister } from '../../angular/ng-register';
 
-import { Rect } from 'lib-common/rect';
+import { Rect } from 'lib-common2/rect';
 
 export class ctrlHomeLanding {
 
