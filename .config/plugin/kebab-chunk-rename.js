@@ -1,6 +1,6 @@
 
 //rename output webpack plugin
-class kebabFile {
+class kebabChunkRename {
 
     constructor(options) {
         
@@ -39,4 +39,4 @@ class kebabFile {
     }
 }
 
-module.exports = kebabFile;
+module.exports = kebabChunkRename;

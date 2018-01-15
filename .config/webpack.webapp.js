@@ -4,7 +4,7 @@ const _ = require('lodash');
 
 const wpPluginHtml = require('html-webpack-plugin');
 const wpPluginTsChecker = require('fork-ts-checker-webpack-plugin');
-const kebabFile = require('./plugin/kebab-file');
+const wpKebabChunkRename = require('./plugin/kebab-chunk-rename');
 
 module.exports = function(inArgs) {
     const lUglify = (inArgs && inArgs.uglify); //--env.uglify
@@ -61,7 +61,7 @@ module.exports = function(inArgs) {
 
     lWebpackSettings.plugins = [];
 
-    lWebpackSettings.plugins.push(new kebabFile());
+    lWebpackSettings.plugins.push(new wpKebabChunkRename());
 
     const lVendorPath = path.normalize(path.resolve(__dirname, '..', '_dist', 'js', inArgs.vendorPath));
     const lVendorScriptInclude = inArgs.vendorDlls.map(v => 'js/' + (inArgs.vendorPath) + v + '.dll.js');
@@ -74,7 +74,7 @@ module.exports = function(inArgs) {
         const n = inArgs.libNames[i];
         lWebpackSettings.plugins.push( 
             new webpack.optimize.CommonsChunkPlugin({
-                name: n,
+                name: _.camelCase(n),
                 minChunks: (m,c) => {
                     const lLibTest = inArgs.libNames.slice(i).map(n => new RegExp(`[/\\\\]${n}[/\\\\]`));
                     const lLibMatch = lLibTest.map( t => t.test(m.resource));
