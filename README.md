@@ -10,7 +10,6 @@ CodeShip | Travis
 ### Todo
 
  - Karma / Mocha tests with coverage.
- - Split logic into multiple self contained modules.
  - Electron app running with node dependencies allowed, but set to null in browser.
  - Codeship or Travis CI
  - Codecov CI
@@ -25,3 +24,4 @@ CodeShip | Travis
 - Basic AngularJS framework added
  - Vendor modules split from build using [Webpack DllPlugin](https://webpack.js.org/plugins/dll-plugin/)
  - Build results profiling ([Bundle Analyzer](https://github.com/webpack-contrib/webpack-bundle-analyzer) / [Analyzer Site](https://webpack.github.io/analyse/))
+- Split logic into multiple self contained modules.

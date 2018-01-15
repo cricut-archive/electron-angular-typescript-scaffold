@@ -70,15 +70,21 @@ function Watch(inArgs) {
             _.pull(lBuildTargets, lTarget);
             const lArgs = _.cloneDeep(inArgs);
             lArgs._ = [lTarget];
-            console.log(`BUILDING:\t[${lTarget}]`);
-            Build(lArgs).then(() => lBuildTarget(true));
+            console.log(`BUILDING: [${lTarget}]`);
+            Build(lArgs).then(() => lBuildTarget(true), () => {
+                lBuilding = false;
+                console.log(`BUILDING: [${lTarget}] Failed`);
+            });
         };
         const lBuildTargetDB = _.debounce(lBuildTarget, 2000);
         for (let i = 0; i < inArgs._.length; i++) {
             const lTarget = inArgs._[i];
             if (lTarget === 'vendor')
                 continue;
-            const lWatcher = chokidar.watch(`./modules/${lTarget}`);
+            const lDepModules = yield GetDependantModules(lTarget);
+            console.log(`WATCHING:\t[${lTarget}] <= [${lDepModules.join('], [')}]`);
+            const lDepModulesPath = lDepModules.map(p => `modules/${p}`);
+            const lWatcher = chokidar.watch([`modules/${lTarget}`, ...lDepModulesPath], { ignored: /(^|[/\\\\])\../ });
             lWatcher.on('raw', (inEvent, inPath, inDetails) => {
                 console.log(`CHANGE:\t[${lTarget}]\t[${chalk_1.default.yellow(inEvent)}]\t'${chalk_1.default.yellow(inPath)}'`);
                 lBuildTargets.push(lTarget);
@@ -88,6 +94,20 @@ function Watch(inArgs) {
         }
         //LOCK FUNCTION
         yield new Promise(() => { });
+    });
+}
+function GetDependantModules(inModule) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const lModuleList = [];
+        let lConfig = require(`../modules/${inModule}/tsconfig.json`);
+        const lPaths = lConfig && lConfig.compilerOptions && lConfig.compilerOptions.paths;
+        const lModuleNames = Object.keys(lPaths || {}).map(k => k.substr(0, k.indexOf('/')));
+        Array.prototype.push.apply(lModuleList, lModuleNames);
+        for (let i = 0; i < lModuleNames.length; i++) {
+            const lDepModules = yield GetDependantModules(lModuleNames[i]);
+            Array.prototype.push.apply(lModuleList, lDepModules);
+        }
+        return _.uniq(lModuleList);
     });
 }
 function Serve(inArgs) {
@@ -110,6 +130,7 @@ function Serve(inArgs) {
             lExpress.use(express.static(path.join(__dirname, '..', '_dist')));
             const lServer = lExpress.listen(9000, 'design-local.cricut.com', function () {
                 console.log(`Listening http://${lServer.address().address}:${lServer.address().port}`);
+                opn('http://design-local.cricut.com:9000');
             });
         });
     });

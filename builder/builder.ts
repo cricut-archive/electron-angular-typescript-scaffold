@@ -66,8 +66,13 @@ async function Watch(inArgs: minimist.ParsedArgs) {
         _.pull(lBuildTargets, lTarget);
         const lArgs = _.cloneDeep(inArgs);
         lArgs._ = [lTarget];
-        console.log(`BUILDING:\t[${lTarget}]`);
-        Build(lArgs).then( () => lBuildTarget(true));
+        console.log(`BUILDING: [${lTarget}]`);
+        Build(lArgs).then( 
+            () => lBuildTarget(true), 
+            () => {
+                lBuilding = false;
+                console.log(`BUILDING: [${lTarget}] Failed`); 
+            } );
     };
     const lBuildTargetDB = _.debounce(lBuildTarget, 2000);
 
@@ -75,7 +80,11 @@ async function Watch(inArgs: minimist.ParsedArgs) {
         const lTarget = inArgs._[i];
         if (lTarget === 'vendor') continue;
 
-        const lWatcher = chokidar.watch(`./modules/${lTarget}`);
+        const lDepModules = await GetDependantModules(lTarget);
+        console.log(`WATCHING:\t[${lTarget}] <= [${lDepModules.join('], [')}]`);
+        const lDepModulesPath = lDepModules.map(p => `modules/${p}`);
+
+        const lWatcher = chokidar.watch([`modules/${lTarget}`, ...lDepModulesPath], {ignored: /(^|[/\\\\])\../});
         lWatcher.on('raw', (inEvent, inPath, inDetails) => {
             console.log(`CHANGE:\t[${lTarget}]\t[${chalk.yellow(inEvent)}]\t'${chalk.yellow(inPath)}'`);
             lBuildTargets.push(lTarget);
@@ -87,6 +96,22 @@ async function Watch(inArgs: minimist.ParsedArgs) {
  
     //LOCK FUNCTION
     await new Promise(()=>{});
+}
+
+async function GetDependantModules(inModule:string): Promise<string[]> {
+    const lModuleList: string[] = [];
+
+    let lConfig = require(`../modules/${inModule}/tsconfig.json`);
+    const lPaths = lConfig && lConfig.compilerOptions && lConfig.compilerOptions.paths;
+    const lModuleNames = Object.keys(lPaths||{}).map( k => k.substr(0, k.indexOf('/')));
+
+    Array.prototype.push.apply(lModuleList, lModuleNames);
+    for(let i:number = 0; i < lModuleNames.length; i++) {
+        const lDepModules = await GetDependantModules(lModuleNames[i]);
+        Array.prototype.push.apply(lModuleList, lDepModules);
+    }
+
+    return _.uniq(lModuleList);
 }
 
 async function Serve(inArgs: minimist.ParsedArgs) {
@@ -111,7 +136,9 @@ async function Serve(inArgs: minimist.ParsedArgs) {
     
         const lServer = lExpress.listen(9000, 'design-local.cricut.com', function () {
             console.log(`Listening http://${lServer.address().address}:${lServer.address().port}`);
+            opn('http://design-local.cricut.com:9000');
         });
+        
     });
 }
 

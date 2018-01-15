@@ -2,7 +2,6 @@ const path = require("path");
 const webpack = require("webpack");
 const _ = require('lodash');
 
-const wpPluginHtml = require('html-webpack-plugin');
 const wpPluginTsChecker = require('fork-ts-checker-webpack-plugin');
 const wpKebabChunkRename = require('./plugin/kebab-chunk-rename');
 
@@ -39,16 +38,12 @@ module.exports = function(inArgs) {
      };
 
 
-     
     lWebpackSettings.module = {
         loaders: [
-            // Typescript (Skip Spec Files)
-            { test: /^(?!.*\.spec\.ts$).*\.ts$/, loader: 'ts-loader', 
-              include: [inArgs.appName, ...inArgs.libNames].map(p => path.resolve(__dirname, '..', 'modules', p)), 
-              options: { transpileOnly: true } }, 
+            // Typescript
+            { test: /\.ts$/, loader: 'ts-loader', include: [path.resolve(__dirname, '..', 'modules')], options: { transpileOnly: true } }, 
             // Angular Templates
-            { test: /ng-templates.ts$/, loader: 'ng-template', 
-              include: [inArgs.appName, ...inArgs.libNames].map(p => path.resolve(__dirname, '..', 'modules', p)) } 
+            { test: /ng-templates.ts$/, loader: 'ng-template', include: [path.resolve(__dirname, '..', 'modules')] } 
         ]
     };
 
@@ -95,18 +90,7 @@ module.exports = function(inArgs) {
     if (lUglify) {
         lWebpackSettings.plugins.push(new webpack.optimize.UglifyJsPlugin({ beautify: false, comments: false }));
     }
-
-
-    lWebpackSettings.plugins.push(
-        new wpPluginHtml({
-            title: 'Webpack Test App',
-            filename: '../index.html',
-            template: lPathAppSource + '/index.html',
-            inject: false,
-            vendor: lVendorScriptInclude
-        })
-    );
-
+    
     lWebpackSettings.plugins.push(
         new wpPluginTsChecker({
             tsconfig: path.resolve(lPathApp + '/tsconfig.json'),

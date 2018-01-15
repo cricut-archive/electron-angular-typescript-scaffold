@@ -10,6 +10,10 @@ export class Rect {
         return lClone;
     }
 
+    /**
+     * Expands the rectangle from the center point.
+     * @param inSize Distance to expand object
+     */
     public Expand(inSize: number) {
         this.mPoint.x -= inSize;
         this.mPoint.y -= inSize;
