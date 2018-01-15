@@ -80,7 +80,8 @@ async function Watch(inArgs: minimist.ParsedArgs) {
         const lTarget = inArgs._[i];
         if (lTarget === 'vendor') continue;
 
-        const lDepModules = await GetDependantModules(lTarget);
+        const lDepModules:string[] = require('../.config/plugin/dependant-modules.js')(lTarget, '../..');
+
         console.log(`WATCHING:\t[${lTarget}] <= [${lDepModules.join('], [')}]`);
         const lDepModulesPath = lDepModules.map(p => `modules/${p}`);
 
@@ -96,22 +97,6 @@ async function Watch(inArgs: minimist.ParsedArgs) {
  
     //LOCK FUNCTION
     await new Promise(()=>{});
-}
-
-async function GetDependantModules(inModule:string): Promise<string[]> {
-    const lModuleList: string[] = [];
-
-    let lConfig = require(`../modules/${inModule}/tsconfig.json`);
-    const lPaths = lConfig && lConfig.compilerOptions && lConfig.compilerOptions.paths;
-    const lModuleNames = Object.keys(lPaths||{}).map( k => k.substr(0, k.indexOf('/')));
-
-    Array.prototype.push.apply(lModuleList, lModuleNames);
-    for(let i:number = 0; i < lModuleNames.length; i++) {
-        const lDepModules = await GetDependantModules(lModuleNames[i]);
-        Array.prototype.push.apply(lModuleList, lDepModules);
-    }
-
-    return _.uniq(lModuleList);
 }
 
 async function Serve(inArgs: minimist.ParsedArgs) {
@@ -142,6 +127,22 @@ async function Serve(inArgs: minimist.ParsedArgs) {
     });
 }
 
+async function Test(inArgs: minimist.ParsedArgs) {
+    const lWebpackPath:string = './node_modules/webpack/bin/webpack.js';
+    
+    const lTarget = inArgs._[0];
+    const lWebPackArgs: string[] = [
+            '--config', 
+            `./modules/${lTarget}/webpack.js`,
+            ... inArgs.v? ['--verbose'] : [],
+            ... inArgs.r? ['--env.concat', '--env.uglify'] : [],
+            '--env.test',
+            '--bail', '--colors'];  
+    
+    await RunTerminal(lWebpackPath, lWebPackArgs, '.', false); 
+    
+}
+
 async function Profile(inArgs: minimist.ParsedArgs) {
     const lWebpackPath:string = './node_modules/webpack/bin/webpack.js';
     const lWebpackAnalyzer:string = './node_modules/webpack-bundle-analyzer/lib/bin/analyzer.js';
@@ -160,7 +161,6 @@ async function Profile(inArgs: minimist.ParsedArgs) {
     opn('http://webpack.github.com/analyse');
     await RunTerminal(lWebpackAnalyzer, [`./_dist/${lTarget}.json`], '.', false);
 }
-
 
 // WRAP MAIN IN ASYNC TO KICK OFF AWAIT CHAIN
 async function _main() {
@@ -183,6 +183,7 @@ async function _main() {
         else if (lArgv.c === 'build') await Build(lArgv);
         else if (lArgv.c === 'watch') await Watch(lArgv);
         else if (lArgv.c === 'serve') await Serve(lArgv);
+        else if (lArgv.c === 'test') await Test(lArgv);
         else if (lArgv.c === 'profile') await Profile(lArgv);
         
         console.log(``);

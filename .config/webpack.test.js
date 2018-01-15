@@ -1,9 +1,11 @@
 const path = require("path");
 const webpack = require("webpack");
 const _ = require('lodash');
+const glob = require('glob');
 
 const wpPluginTsChecker = require('fork-ts-checker-webpack-plugin');
 const wpKebabChunkRename = require('./plugin/kebab-chunk-rename');
+const depModules = require('./plugin/dependant-modules');
 
 module.exports = function(inArgs) {
     const lUglify = (inArgs && inArgs.uglify); //--env.uglify
@@ -12,6 +14,17 @@ module.exports = function(inArgs) {
     const lPathApp = ['.', 'modules', inArgs.appName].join('/');
     const lPathAppSource = ['.', 'modules', inArgs.appName, 'source'].join('/');
     
+    // Get all modules that make up the application
+    const lDepModules = depModules(inArgs.appName, '../..');
+
+    // Get all spec files in the application & dep
+    const lSpecFiles = {};
+    [inArgs.appName, ...lDepModules].map( n => {
+        const lFiles = glob.sync(['.', 'modules', n, 'source', '**', '*.spec.ts'].join('/'));
+        if (lFiles && lFiles.length) {
+            lSpecFiles[_.camelCase(n)+'Test'] = lFiles;
+        }
+    });
     
     const lWebpackSettings = {};
 
@@ -19,17 +32,15 @@ module.exports = function(inArgs) {
     lWebpackSettings.context = path.normalize(__dirname + '/..');
 
     // The point or points to enter the application. 
-    lWebpackSettings.entry = {};
-    lWebpackSettings.entry[_.camelCase(inArgs.appName)] = [lPathAppSource + "/index.ts"];
+    lWebpackSettings.entry = lSpecFiles;
     
-
     lWebpackSettings.resolve = { 
         extensions: ['.ts', '.js'], // Extentions to try on import
         modules: ['node_modules'], // Import search paths
         alias: {} //Import to folder map
     };
     // Map libraries to their correct folder
-    inArgs.libNames.map(n => lWebpackSettings.resolve.alias[n] = path.resolve(__dirname, '..', 'modules', n, 'source'));
+    lDepModules.map(n => lWebpackSettings.resolve.alias[n] = path.resolve(__dirname, '..', 'modules', n, 'source'));
 
 
     // Resolve for Webpack Loaders
@@ -41,15 +52,13 @@ module.exports = function(inArgs) {
     lWebpackSettings.module = {
         loaders: [
             // Typescript
-            { test: /\.ts$/, loader: 'ts-loader', include: [path.resolve(__dirname, '..', 'modules')], options: { transpileOnly: true } }, 
-            // Angular Templates
-            { test: /ng-templates.ts$/, loader: 'ng-template', include: [path.resolve(__dirname, '..', 'modules')] } 
+            { test: /\.ts$/, loader: 'ts-loader', include: [path.resolve(__dirname, '..', 'modules')], options: { transpileOnly: true } }
         ]
     };
 
 
     lWebpackSettings.output = {
-        path: path.join(__dirname, '..', '_dist', 'js'),
+        path: path.join(__dirname, '..', '_dist', 'test'),
         filename: "[name].js",
         library: "[name]"
     };
@@ -69,7 +78,7 @@ module.exports = function(inArgs) {
     }));
     Array.prototype.push.apply(lWebpackSettings.plugins, lVendorDllPlugin);
     
-    for(let i=0; i<inArgs.libNames.length; i++ ) {
+    /*for(let i=0; i<inArgs.libNames.length; i++ ) {
         const n = inArgs.libNames[i];
         lWebpackSettings.plugins.push( 
             new webpack.optimize.CommonsChunkPlugin({
@@ -80,12 +89,12 @@ module.exports = function(inArgs) {
                     return _.some(lLibMatch);
                 }
             }));
-    }
+    }*/
     
-    lWebpackSettings.plugins.push(new webpack.optimize.CommonsChunkPlugin({
+    /*lWebpackSettings.plugins.push(new webpack.optimize.CommonsChunkPlugin({
         name: "webpack",
         minChunks: Infinity 
-    }));
+    }));*/
     
     if (lUglify) {
         lWebpackSettings.plugins.push(new webpack.optimize.UglifyJsPlugin({ beautify: false, comments: false }));

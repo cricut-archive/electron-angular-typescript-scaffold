@@ -17,7 +17,7 @@ class kebabChunkRename {
                     const lGetName = (inName) => {
                         let lNameSplit = inName.split('.');
                         const lNameExt = lNameSplit.length > 1 ? lNameSplit.pop() : 'js';
-                        lNameSplit = lNameSplit.map( n => n.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase() );
+                        lNameSplit = lNameSplit.map( n => n.replace(/([a-z]\d*)([A-Z]\d*)/g, '$1-$2').toLowerCase() );
                         lNameSplit.push(lNameExt);
                         return lNameSplit.join('.');
                     };

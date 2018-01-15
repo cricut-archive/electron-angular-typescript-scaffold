@@ -2,6 +2,7 @@ module.exports = function(inArgs) {
     inArgs = inArgs || {};
     const lUglify = (inArgs && inArgs.uglify); //--env.uglify
     const lConcat = (inArgs && inArgs.concat); //--env.concat
+    const lTest = (inArgs && inArgs.test); //--env.test
 
     inArgs.appName = 'app-basic-test';
     
@@ -10,5 +11,10 @@ module.exports = function(inArgs) {
 
     inArgs.libNames = ['lib-common', 'lib-common2'];
 
-    return inArgs.rawSettings ? inArgs : require('../../.config/webpack.webapp')(inArgs);
+    if (lTest) {
+        return require('../../.config/webpack.test')(inArgs);
+    } else {
+        return require('../../.config/webpack.webapp')(inArgs);
+    }
+    
 }

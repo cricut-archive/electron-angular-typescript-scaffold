@@ -81,7 +81,7 @@ function Watch(inArgs) {
             const lTarget = inArgs._[i];
             if (lTarget === 'vendor')
                 continue;
-            const lDepModules = yield GetDependantModules(lTarget);
+            const lDepModules = require('../.config/plugin/dependant-modules.js')(lTarget, '../..');
             console.log(`WATCHING:\t[${lTarget}] <= [${lDepModules.join('], [')}]`);
             const lDepModulesPath = lDepModules.map(p => `modules/${p}`);
             const lWatcher = chokidar.watch([`modules/${lTarget}`, ...lDepModulesPath], { ignored: /(^|[/\\\\])\../ });
@@ -94,20 +94,6 @@ function Watch(inArgs) {
         }
         //LOCK FUNCTION
         yield new Promise(() => { });
-    });
-}
-function GetDependantModules(inModule) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const lModuleList = [];
-        let lConfig = require(`../modules/${inModule}/tsconfig.json`);
-        const lPaths = lConfig && lConfig.compilerOptions && lConfig.compilerOptions.paths;
-        const lModuleNames = Object.keys(lPaths || {}).map(k => k.substr(0, k.indexOf('/')));
-        Array.prototype.push.apply(lModuleList, lModuleNames);
-        for (let i = 0; i < lModuleNames.length; i++) {
-            const lDepModules = yield GetDependantModules(lModuleNames[i]);
-            Array.prototype.push.apply(lModuleList, lDepModules);
-        }
-        return _.uniq(lModuleList);
     });
 }
 function Serve(inArgs) {
@@ -133,6 +119,21 @@ function Serve(inArgs) {
                 opn('http://design-local.cricut.com:9000');
             });
         });
+    });
+}
+function Test(inArgs) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const lWebpackPath = './node_modules/webpack/bin/webpack.js';
+        const lTarget = inArgs._[0];
+        const lWebPackArgs = [
+            '--config',
+            `./modules/${lTarget}/webpack.js`,
+            ...inArgs.v ? ['--verbose'] : [],
+            ...inArgs.r ? ['--env.concat', '--env.uglify'] : [],
+            '--env.test',
+            '--bail', '--colors'
+        ];
+        yield RunTerminal(lWebpackPath, lWebPackArgs, '.', false);
     });
 }
 function Profile(inArgs) {
@@ -176,6 +177,8 @@ function _main() {
                 yield Watch(lArgv);
             else if (lArgv.c === 'serve')
                 yield Serve(lArgv);
+            else if (lArgv.c === 'test')
+                yield Test(lArgv);
             else if (lArgv.c === 'profile')
                 yield Profile(lArgv);
             console.log(``);
