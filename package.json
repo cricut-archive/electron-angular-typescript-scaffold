@@ -8,17 +8,7 @@
     "build": "node builder/builder.js -c build",
     "watch": "node builder/builder.js -c watch",
     "serve": "node builder/builder.js -c serve",
-    "profile": "node builder/builder.js -c profile",
-    "_clean": "node builder/builder.js -a clean",
-    "_build": "node builder/builder.js build",
-    "_rebuild": "node builder/builder.js rebuild",
-    "_rebuild-debug": "npm run clean && npm run build-vendor-debug && npm run build-app-debug",
-    "_build-vendor-debug": "webpack --config ./.config/webpack.vendor.js --bail",
-    "_build-vendor-release": "webpack --config ./.config/webpack.vendor.js --bail --env.concat --env.uglify",
-    "_build-app-debug": "webpack --config ./source/app-basic-test/webpack.js --bail",
-    "_build-app-release": "webpack --config ./source/app-basic-test/webpack.js --bail --env.concat --env.uglify",
-    "_serve": "webpack-dev-server --config ./source/app-basic-test/webpack.js --host design-local.cricut.com --content-base ./dist --open",
-    "_test": "echo \"Error: no test specified\" && exit 1"
+    "profile": "node builder/builder.js -c profile"
   },
   "author": "Christopher Schear (chris.npm@schear.us)",
   "license": "ISC",
