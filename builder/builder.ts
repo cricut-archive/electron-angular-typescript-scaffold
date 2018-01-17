@@ -129,6 +129,7 @@ async function Serve(inArgs: minimist.ParsedArgs) {
 
 async function Test(inArgs: minimist.ParsedArgs) {
     const lWebpackPath:string = './node_modules/webpack/bin/webpack.js';
+    const lKarmaPath:string = './node_modules/karma/bin/karma';
     
     const lTarget = inArgs._[0];
     const lWebPackArgs: string[] = [
@@ -140,6 +141,9 @@ async function Test(inArgs: minimist.ParsedArgs) {
             '--bail', '--colors'];  
     
     await RunTerminal(lWebpackPath, lWebPackArgs, '.', false); 
+
+    await RunTerminal(lKarmaPath, ['start', './.config/karma.config.js'], '.', false);
+
     
 }
 

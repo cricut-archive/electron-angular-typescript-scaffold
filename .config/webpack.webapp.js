@@ -9,6 +9,7 @@ const wpKebabChunkRename = require('./plugin/kebab-chunk-rename');
 module.exports = function(inArgs) {
     const lUglify = (inArgs && inArgs.uglify); //--env.uglify
     const lConcat = (inArgs && inArgs.concat); //--env.concat
+    const lTest = (inArgs && inArgs.test); //--env.test
     
     const lPathApp = ['.', 'modules', inArgs.appName].join('/');
     const lPathAppSource = ['.', 'modules', inArgs.appName, 'source'].join('/');
@@ -22,7 +23,6 @@ module.exports = function(inArgs) {
     // The point or points to enter the application. 
     lWebpackSettings.entry = {};
     lWebpackSettings.entry[_.camelCase(inArgs.appName)] = [lPathAppSource + "/index.ts"];
-    
 
     lWebpackSettings.resolve = { 
         extensions: ['.ts', '.js'], // Extentions to try on import
@@ -67,13 +67,36 @@ module.exports = function(inArgs) {
 
     lWebpackSettings.plugins.push(new wpKebabChunkRename());
 
+    lWebpackSettings.plugins.push(
+        new wpPluginTsChecker({
+            tsconfig: path.resolve(lPathApp + '/tsconfig.json'),
+            tslint: path.resolve(lPathApp + '/tslint.json'),
+            diagnosticFormatter: "codeframe", 
+            workers: 2
+        })
+    );
+
     const lVendorPath = path.normalize(path.resolve(__dirname, '..', '_dist', 'js', inArgs.vendorPath));
     const lVendorScriptInclude = inArgs.vendorDlls.map(v => 'js/' + (inArgs.vendorPath) + v + '.dll.js');
     const lVendorDllPlugin = inArgs.vendorDlls.map(v => new webpack.DllReferencePlugin({ 
         manifest: require(path.resolve(lVendorPath, v + '.dll.json')) 
     }));
     Array.prototype.push.apply(lWebpackSettings.plugins, lVendorDllPlugin);
-    
+        
+    if (lUglify) {
+        lWebpackSettings.plugins.push(new webpack.optimize.UglifyJsPlugin({ beautify: false, comments: false }));
+    }
+
+    lWebpackSettings.plugins.push(
+        new wpPluginHtml({
+            title: 'Webpack Test App',
+            filename: '../index.html',
+            template: lPathAppSource + '/index.html',
+            inject: false,
+            vendor: lVendorScriptInclude
+        })
+    );
+
     for(let i=0; i<inArgs.libNames.length; i++ ) {
         const n = inArgs.libNames[i];
         lWebpackSettings.plugins.push( 
@@ -91,30 +114,6 @@ module.exports = function(inArgs) {
         name: "webpack",
         minChunks: Infinity 
     }));
-    
-    if (lUglify) {
-        lWebpackSettings.plugins.push(new webpack.optimize.UglifyJsPlugin({ beautify: false, comments: false }));
-    }
-
-
-    lWebpackSettings.plugins.push(
-        new wpPluginHtml({
-            title: 'Webpack Test App',
-            filename: '../index.html',
-            template: lPathAppSource + '/index.html',
-            inject: false,
-            vendor: lVendorScriptInclude
-        })
-    );
-
-    lWebpackSettings.plugins.push(
-        new wpPluginTsChecker({
-            tsconfig: path.resolve(lPathApp + '/tsconfig.json'),
-            tslint: path.resolve(lPathApp + '/tslint.json'),
-            diagnosticFormatter: "codeframe", 
-            workers: 2
-        })
-    );
     
     
     return  lWebpackSettings;

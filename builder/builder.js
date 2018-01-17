@@ -124,6 +124,7 @@ function Serve(inArgs) {
 function Test(inArgs) {
     return __awaiter(this, void 0, void 0, function* () {
         const lWebpackPath = './node_modules/webpack/bin/webpack.js';
+        const lKarmaPath = './node_modules/karma/bin/karma';
         const lTarget = inArgs._[0];
         const lWebPackArgs = [
             '--config',
@@ -134,6 +135,7 @@ function Test(inArgs) {
             '--bail', '--colors'
         ];
         yield RunTerminal(lWebpackPath, lWebPackArgs, '.', false);
+        yield RunTerminal(lKarmaPath, ['start', './.config/karma.config.js'], '.', false);
     });
 }
 function Profile(inArgs) {
