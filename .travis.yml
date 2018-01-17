@@ -25,10 +25,13 @@ before_script:
 script:
 - echo '.'
 
-- echo 'Building...' && echo -en 'travis_fold:start:script.1\\r'
-- npm run build -- vendor app-basic-test
+- echo 'Testing...' && echo -en 'travis_fold:start:script.1\\r'
+- npm run build -- vendor && npm run test -- app-basic-test
 - echo -en 'travis_fold:end:script.1\\r'
 
-- echo 'Testing...' && echo -en 'travis_fold:start:script.2\\r'
-#- ./_build/Release/libCricutCommonTest -s
+- echo 'Building...' && echo -en 'travis_fold:start:script.2\\r'
+- npm run clean
+- npm run build -- vendor app-basic-test
 - echo -en 'travis_fold:end:script.2\\r'
+
+
