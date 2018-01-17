@@ -40,7 +40,6 @@
     "karma-jasmine": "^1.1.1",
     "karma-json-fixtures-preprocessor": "0.0.6",
     "karma-mocha-reporter": "^2.2.5",
-    "karma-typescript": "^3.0.9",
     "minimist": "1.2.0",
     "opn": "5.1.0",
     "rimraf": "2.6.2",
