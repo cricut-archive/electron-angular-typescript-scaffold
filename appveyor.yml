@@ -1,0 +1,22 @@
+image:
+- Visual Studio 2017
+environment:
+  nodejs_version: "9"
+
+  matrix:
+     - GENERATOR: "Visual Studio 17"
+       CONFIG: Release
+
+install:
+  - ps: Install-Product node $env:nodejs_version
+  - npm --version
+  - node --version
+  - npm install
+  - npm ls --depth=0
+
+build_script:
+  - npm run build -- vendor && npm run test -- app-basic-test
+  - npm run clean
+  - npm run build -- vendor app-basic-test
+
+test: off
