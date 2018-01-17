@@ -55,6 +55,7 @@ module.exports = function(config) {
           reporters: [
               { type: 'html', dir: './_dist/coverage/js', subdir: function ( browser ) { return ''; } },
               { type: 'json', dir: './_dist/coverage', subdir: function ( browser ) { return ''; } },
+              { type: 'lcov', dir: './_dist/coverage/lcov', subdir: function ( browser ) { return ''; } },
               { type: 'text' }
           ]
       },
