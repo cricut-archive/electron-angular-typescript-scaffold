@@ -5,7 +5,7 @@ module.exports = function(config) {
     config.set({
   
       // base path that will be used to resolve all patterns (eg. files, exclude)
-      basePath: '..',
+      basePath: '../modules',
   
       // frameworks to use
       // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
@@ -14,7 +14,7 @@ module.exports = function(config) {
   
       // list of files / patterns to load in the browser
       files: [
-        { pattern: './modules/lib-common/**/*.ts' },
+        { pattern: './**/*.ts' },
         
         //{ pattern: './_dist/test/**/*.json', served: true, included: true },
       ],
@@ -28,32 +28,41 @@ module.exports = function(config) {
       // preprocess matching files before serving them to the browser
       // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
       preprocessors: {
-        './**/*.ts': ['karma-typescript'],
+        './**/*.ts': ['karma-typescript', 'coverage'],
         //'./_dist/test/**/*.json': ['json_fixtures']
       },
   
       karmaTypescriptConfig: {
         compilerOptions: {
-          module: "commonjs"
-        },        
-        tsconfig: "./modules/lib-common/tsconfig.json",
+          module: "commonjs",
+          "baseUrl": ".",
+          "paths": {
+            "lib-common/*": [ "./lib-common/source/*" ],
+            "lib-common2/*": [ "./lib-common2/source/*" ]
+          }
+        },
+
+        reports: {
+          lcovonly: "../_coverage" 
+        }
+
     },
       
   
       // test results reporter to use
       // possible values: 'dots', 'progress'
       // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-      reporters: [/*'progress',  'coverage',*/ 'mocha', 'karma-typescript'],
+      reporters: [/*'progress', */ 'coverage', 'mocha', 'karma-typescript'],
   
       // add plugin settings
-      /*coverageReporter: {
+      coverageReporter: {
           reporters: [
-              { type: 'html', dir: './_dist/coverage/js', subdir: function ( browser ) { return ''; } },
-              { type: 'json', dir: './_dist/coverage', subdir: function ( browser ) { return ''; } },
+              //{ type: 'html', dir: './_dist/coverage/js', subdir: function ( browser ) { return ''; } },
+              //{ type: 'json', dir: './_dist/coverage', subdir: function ( browser ) { return ''; } },
               { type: 'lcov', dir: './_dist/coverage/lcov', subdir: function ( browser ) { return ''; } },
-              { type: 'text' }
+              //{ type: 'text' }
           ]
-      },*/
+      },
   
       // web server port
       port: 9876,
