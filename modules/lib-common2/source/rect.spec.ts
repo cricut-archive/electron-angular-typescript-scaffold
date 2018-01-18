@@ -19,6 +19,16 @@ describe('Rect', () => {
         });
     });
 
+    describe('Area', () => {
+        it('should calculate the area', () => {
+            const lRect: Rect = new Rect();
+            lRect.Width = 5;
+            lRect.Height = 5;
+
+            expect(lRect.Area).toBe(25);
+        });
+    });
+
     describe('Clone', () => {
         it('should create an independant clone', () => {
             expect(true).toBe(true);
