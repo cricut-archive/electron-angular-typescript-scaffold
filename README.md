@@ -5,7 +5,8 @@ CodeShip | Travis | AppVeyor
 --- | --- | ---
 [ ![Codeship Status for cschear/electron-angular-typescript-scaffold](https://app.codeship.com/projects/29b8a030-c178-0135-0e80-2a7d302f47bf/status?branch=feature/initial-release)](https://app.codeship.com/projects/260343) | [![Build Status](https://travis-ci.org/cschear/electron-angular-typescript-scaffold.svg?branch=feature%2Finitial-release)](https://travis-ci.org/cschear/electron-angular-typescript-scaffold) | [![Build status](https://ci.appveyor.com/api/projects/status/7cb45j0xjdov0v8r/branch/feature/initial-release?svg=true)](https://ci.appveyor.com/project/cschear/electron-angular-typescript-scaffold/branch/feature/initial-release)
 
-
+CodeCov
+[![codecov](https://codecov.io/gh/cschear/electron-angular-typescript-scaffold/branch/feature%2Finitial-release/graph/badge.svg)](https://codecov.io/gh/cschear/electron-angular-typescript-scaffold)
 
 ### Todo
 
