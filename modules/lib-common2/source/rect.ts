@@ -69,10 +69,6 @@ export class Rect {
         return new Point(this.Left + (this.Width / 2), this.Top + (this.Height / 2));
     }
 
-    public get Area(): number {
-        return this.Width * this.Height;
-    }
-
     public ContainsPoint(inPoint: Point, scale: number): boolean {
         return this.Left * scale <= inPoint.x
             && this.Top * scale <= inPoint.y
