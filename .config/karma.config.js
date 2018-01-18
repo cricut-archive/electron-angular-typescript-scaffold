@@ -9,22 +9,13 @@ module.exports = function(config) {
   
       // frameworks to use
       // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-      frameworks: ['jasmine'],
+      frameworks: ['jasmine', 'karma-typescript'],
   
   
       // list of files / patterns to load in the browser
       files: [
-        { pattern: './_dist/js/vendor/**/*.js', included: true, served: true },
-        { pattern: './_dist/js/vendor/**/*.js.map', included: false },
-
-        { pattern: './_dist/js/webpack.js', included: true, served: true },
-        { pattern: './_dist/js/lib-common2.js', included: true, served: true },
-        { pattern: './_dist/js/lib-common2-spec.js', included: true, served: true },
-        { pattern: './_dist/js/lib-common.js', included: true, served: true },
-        { pattern: './_dist/js/lib-common-spec.js', included: true, served: true },
-        { pattern: './_dist/js/*.js', included: true, served: true },
-        { pattern: './_dist/js/*.js.map', included: false },
-
+        { pattern: './modules/lib-common/**/*.ts' },
+        
         //{ pattern: './_dist/test/**/*.json', served: true, included: true },
       ],
   
@@ -37,28 +28,32 @@ module.exports = function(config) {
       // preprocess matching files before serving them to the browser
       // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
       preprocessors: {
-        './_dist/js/!(*-spec|webpack).js': ['coverage'],
+        './**/*.ts': ['karma-typescript'],
         //'./_dist/test/**/*.json': ['json_fixtures']
       },
   
-      jsonFixturesPreprocessor: {
-        variableName: '__json__'
-      },
+      karmaTypescriptConfig: {
+        compilerOptions: {
+          module: "commonjs"
+        },        
+        tsconfig: "./modules/lib-common/tsconfig.json",
+    },
+      
   
       // test results reporter to use
       // possible values: 'dots', 'progress'
       // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-      reporters: [/*'progress', */ 'coverage', 'mocha'],
+      reporters: [/*'progress',  'coverage',*/ 'mocha', 'karma-typescript'],
   
       // add plugin settings
-      coverageReporter: {
+      /*coverageReporter: {
           reporters: [
               { type: 'html', dir: './_dist/coverage/js', subdir: function ( browser ) { return ''; } },
               { type: 'json', dir: './_dist/coverage', subdir: function ( browser ) { return ''; } },
               { type: 'lcov', dir: './_dist/coverage/lcov', subdir: function ( browser ) { return ''; } },
               { type: 'text' }
           ]
-      },
+      },*/
   
       // web server port
       port: 9876,

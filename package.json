@@ -26,6 +26,8 @@
     "@types/opn": "^5.1.0",
     "@uirouter/angularjs": "1.0.13",
     "chalk": "^2.3.0",
+    "chokidar": "^2.0.0",
+    "codecov": "^3.0.0",
     "express": "^4.16.2",
     "fork-ts-checker-webpack-plugin": "0.3.0",
     "fs-extra": "^5.0.0",
@@ -41,6 +43,7 @@
     "karma-jasmine": "^1.1.1",
     "karma-json-fixtures-preprocessor": "0.0.6",
     "karma-mocha-reporter": "^2.2.5",
+    "karma-typescript": "^3.0.9",
     "minimist": "1.2.0",
     "opn": "5.1.0",
     "rimraf": "2.6.2",
@@ -50,9 +53,7 @@
     "tslint-loader": "3.5.3",
     "typescript": "2.6.2",
     "webpack": "3.10.0",
-    "webpack-bundle-analyzer": "2.9.2",
-    "chokidar": "^2.0.0",
-    "codecov": "^3.0.0"
+    "webpack-bundle-analyzer": "2.9.2"
   },
   "dependencies": {
     "angular": "1.6.8",
