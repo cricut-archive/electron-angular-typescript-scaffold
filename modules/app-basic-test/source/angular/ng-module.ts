@@ -1,36 +1,12 @@
-import { bootstrap, IModule, module } from 'angular';
-import { ngConfig } from './ng-config';
-import { ngRun } from './ng-run';
+import { IModule, module } from 'angular';
+
+import '../index.less';
 
 export class ngModule {
+    private static mModule: IModule = ngModule.mModule = module('appBasicTest', ['ui.router']);
 
-    private static mInstance: ngModule;
-
-    private mModule: IModule;
-    private mConfig: ngConfig;
-    private mRun: ngRun;
-
-    public constructor() {
-        console.debug('ANGULAR: ngModule()');
-
-        this.mModule = module('appBasicTest', ['ui.router']);
-        this.mConfig = new ngConfig(this.mModule);
-        this.mRun = new ngRun(this.mModule);
-
-        // TO TEST TRANSPILE SETTINGS
-        // const array = [{} {}];
-        // const x: number = '1';
-    }
-
-    /**
-     * Returns the applications module handle, creating it if needed.
-     */
     public static Get(): IModule {
-        if (!ngModule.mInstance) {
-            ngModule.mInstance = new ngModule();
-        }
-
-        return ngModule.mInstance.mModule;
+        return this.mModule;
     }
 
 }

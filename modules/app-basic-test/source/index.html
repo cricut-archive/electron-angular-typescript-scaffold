@@ -4,15 +4,18 @@
 <head>
   <meta charset="UTF-8">
   <title>Application A</title>
+  <% for (key in htmlWebpackPlugin.options.cssVendor) { %><link rel="stylesheet" href="<%= htmlWebpackPlugin.options.cssVendor[key] %>">
+  <% } for (key in htmlWebpackPlugin.options.css) { %><link rel="stylesheet" href="<%= htmlWebpackPlugin.options.css[key] %>">
+  <% } %>
 </head>
 
 <body>
-  <div ui-view>Loading...</div>
+  <div class="box" ui-view>Loading...</div>
   
   
-<% for (key in htmlWebpackPlugin.options.vendor) { %><script type="text/javascript" src="<%= htmlWebpackPlugin.options.vendor[key] %>"></script>
-<% } for (key in htmlWebpackPlugin.files.js) { %><script defer type="text/javascript" src="<%= htmlWebpackPlugin.files.js[key] %>"></script>
-<% } %>
+  <% for (key in htmlWebpackPlugin.options.jsVendor) { %><script type="text/javascript" src="<%= htmlWebpackPlugin.options.jsVendor[key] %>"></script>
+  <% } for (key in htmlWebpackPlugin.files.js) { %><script defer type="text/javascript" src="<%= htmlWebpackPlugin.files.js[key] %>"></script>
+  <% } %>
 </body>
 
 </html>

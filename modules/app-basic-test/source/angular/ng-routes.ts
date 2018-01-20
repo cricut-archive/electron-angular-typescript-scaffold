@@ -1,8 +1,13 @@
+
+import { dirRouteHomeLanding } from '../route/home-landing/dir-route-home-landing';
+import { dirRouteHome } from '../route/home/dir-route-home';
+
 import {StateProvider, UrlRouterProvider} from '@uirouter/angularjs';
 
+import * as _ from 'lodash';
+
 export class ngRoutes {
-    constructor(private readonly mModuleName: string,
-                private $stateProvider: StateProvider,
+    constructor(private $stateProvider: StateProvider,
                 private $urlRouterProvider: UrlRouterProvider) {
         console.debug('ANGULAR: ngRoutes()');
 
@@ -12,30 +17,15 @@ export class ngRoutes {
         $stateProvider.state('home', {
             url: '/home',
             views: {
-                '': this.ViewBuilder('Home', this.mModuleName, true),
+                '': { template: `<${_.kebabCase(dirRouteHome.$tsName)} />` },
             },
         });
         $stateProvider.state('home.landing', {
             url: '^/landing',
             views: {
-                '': this.ViewBuilder('HomeLanding', this.mModuleName, true),
+                '': { template: `<${_.kebabCase(dirRouteHomeLanding.$tsName)} />` },
             },
         });
     }
 
-    private ViewBuilder(inViewName: string, inModuleName: string, inIsRoute?: boolean) {
-        inIsRoute = inIsRoute || false;
-
-        const lView: any = {};
-        const lTmplFolder: string = (inIsRoute ? 'route' : 'view');
-        const lViewDash: string = inViewName.replace(/\W+/g, '-').replace(/([a-z\d])([A-Z])/g, '$1-$2').toLowerCase();
-        const lModuleName: string = inModuleName.replace(/\W+/g, '-')
-                                                .replace(/([a-z\d])([A-Z])/g, '$1-$2').toLowerCase();
-
-        lView.templateUrl = `${lModuleName}/source/${lTmplFolder}/${lViewDash}/tmpl-${lViewDash}.html`;
-        lView.controller = `ctrl${inViewName}`;
-        lView.controllerAs = `ctrl${inViewName}`;
-
-        return lView;
-    }
 }

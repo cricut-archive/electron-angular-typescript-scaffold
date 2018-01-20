@@ -20,7 +20,8 @@
                 "instance-method"
               ]
             }
-          ]
+          ],
+        "ordered-imports": false
     },
     "rulesDirectory": []
 }

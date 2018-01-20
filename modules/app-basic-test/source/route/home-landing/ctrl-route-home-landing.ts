@@ -4,19 +4,19 @@ import { ngRegister } from '../../angular/ng-register';
 
 import { Rect } from 'lib-common2/rect';
 
-export class ctrlHomeLanding {
+export class ctrlRouteHomeLanding {
 
     public static $tsName: string = ngRegister.Add(
-        ctrlHomeLanding, 'ctrlHomeLanding', ['$log', '$scope'], ngModule.Get());
+        ctrlRouteHomeLanding, 'ctrlRouteHomeLanding', ['$log', '$scope'], ngModule.Get());
 
     constructor(private $log: ILogService, private $scope: IScope ) {
-        $log.debug(`+ ${ctrlHomeLanding.$tsName}`);
+        $log.debug(`+ ${ctrlRouteHomeLanding.$tsName}`);
 
         const lRect = new Rect();
         lRect.Expand(5);
 
         this.$scope.$on('$destroy', () => {
-            this.$log.debug(`- ${ctrlHomeLanding.$tsName}`);
+            this.$log.debug(`- ${ctrlRouteHomeLanding.$tsName}`);
         });
     }
 }

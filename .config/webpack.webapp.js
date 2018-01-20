@@ -13,9 +13,10 @@ module.exports = function(inArgs) {
     
     const lPathApp = ['.', 'modules', inArgs.appName].join('/');
     const lPathAppSource = ['.', 'modules', inArgs.appName, 'source'].join('/');
-    
-    
+
+
     const lWebpackSettings = {};
+
 
     // The base directory, an absolute path, for resolving entry points and loaders from configuration.
     lWebpackSettings.context = path.normalize(__dirname + '/..');
@@ -23,7 +24,7 @@ module.exports = function(inArgs) {
     // The point or points to enter the application. 
     lWebpackSettings.entry = {};
     lWebpackSettings.entry[_.camelCase(inArgs.appName)] = [lPathAppSource + "/index.ts"];
-
+    
     lWebpackSettings.resolve = { 
         extensions: ['.ts', '.js'], // Extentions to try on import
         modules: ['node_modules'], // Import search paths
@@ -39,16 +40,19 @@ module.exports = function(inArgs) {
      };
 
 
-     
     lWebpackSettings.module = {
         loaders: [
-            // Typescript (Skip Spec Files)
             { test: /^(?!.*\.spec\.ts$).*\.ts$/, loader: 'ts-loader', 
               include: [inArgs.appName, ...inArgs.libNames].map(p => path.resolve(__dirname, '..', 'modules', p)), 
-              options: { transpileOnly: true } }, 
-            // Angular Templates
-            { test: /ng-templates.ts$/, loader: 'ng-template', 
-              include: [inArgs.appName, ...inArgs.libNames].map(p => path.resolve(__dirname, '..', 'modules', p)) } 
+              options: { transpileOnly: true } },             
+            { test: /\.less$/, loader: [
+                { loader: "style-loader" },
+                { loader: "css-loader", options: { sourceMap: true } }, 
+                { loader: "less-loader", options: { sourceMap: true } }],
+            },
+            { test: /\.tmpl$/, loader: 'html-loader',              
+              options: { attrs: false, exportAsDefault: true }                
+            }     
         ]
     };
 
@@ -93,9 +97,25 @@ module.exports = function(inArgs) {
             filename: '../index.html',
             template: lPathAppSource + '/index.html',
             inject: false,
-            vendor: lVendorScriptInclude
+            jsVendor: lVendorScriptInclude,
+            //cssVendor: ['style/vendor/vendor.css'],
+            //css: [`style/${inArgs.appName}.css`]
         })
     );
+
+    /*
+    n           html    css    other
+    lib-common  *
+    lib-common          *
+    lib-common                 *
+
+    lib-common&html&css?
+    lib-common&html?
+    lib-common?
+    */
+
+    
+
 
     for(let i=0; i<inArgs.libNames.length; i++ ) {
         const n = inArgs.libNames[i];
@@ -105,6 +125,7 @@ module.exports = function(inArgs) {
                 minChunks: (m,c) => {
                     const lLibTest = inArgs.libNames.slice(i).map(n => new RegExp(`[/\\\\]${n}[/\\\\]`));
                     const lLibMatch = lLibTest.map( t => t.test(m.resource));
+                    //console.log(`${_.some(lLibMatch)}\t${n}\t${m.resource}`);
                     return _.some(lLibMatch);
                 }
             }));

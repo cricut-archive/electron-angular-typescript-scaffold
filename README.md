@@ -7,15 +7,16 @@ CodeShip | Travis | AppVeyor | Codecov
 
 ### Todo
 
- - Karma / Mocha tests with coverage.
+ 
  - Electron app running with node dependencies allowed, but set to null in browser.
- - Codeship or Travis CI
- - Codecov CI
  - Less / Sass Styles
  - Static Assets
  
 
 ### Done
+- Codecov CI
+- Codeship or Travis CI
+- Karma tests with coverage.
 - Webpack 3 build for Typescript
   - TSLint
   - [ForkTsChecker](https://github.com/Realytics/fork-ts-checker-webpack-plugin) for faster TS builds

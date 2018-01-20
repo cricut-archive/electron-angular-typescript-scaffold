@@ -1,11 +1,11 @@
 
-import { bootstrap } from 'angular';
-import { ngModule } from './angular/ng-module';
+import { bootstrap, auto } from 'angular';
+import { ngBootstrap } from './angular/ng-bootstrap';
 
-import './route/home-landing/ctrl-home-landing';
-import './route/home/ctrl-home';
+let ngApp: auto.IInjectorService;
 
 ( () => {
     // MANUALY START UP ANGULAR
-    bootstrap(document, [ngModule.Get().name]);
+    console.debug('ANGULAR: Index Startup');
+    ngApp = bootstrap(document, [new ngBootstrap().Name]);
 })();

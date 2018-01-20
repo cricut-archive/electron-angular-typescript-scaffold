@@ -21,6 +21,7 @@ export class ngRegister {
     public static Add(inObject: any, inName: string, inInject: string[], inModule: IModule): string {
         const lParams: string[] = this.GetParamNames(inObject.prototype.constructor);
         const lClassName: string|undefined = lParams.shift();
+
         if (!lClassName || !inName) {
             throw new Error('APPINJECT: Invalid Class Name');
         }
@@ -39,7 +40,9 @@ export class ngRegister {
             inObject.$inject = inInject;
 
             if (inName.indexOf('dir') === 0) {
-                inModule.directive(inName, inObject);
+                const lDirective = inObject.getDirective();
+                lDirective.$inject = inObject.$inject;
+                inModule.directive(inName, lDirective);
             } else if (inName.indexOf('srvc') === 0) {
                 inModule.service(inName, inObject);
             } else if (inName.indexOf('ctrl') === 0) {
