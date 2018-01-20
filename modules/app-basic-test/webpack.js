@@ -7,7 +7,7 @@ module.exports = function(inArgs) {
     inArgs.appName = 'app-basic-test';
     
     inArgs.vendorPath = lConcat ? '' : 'vendor/';
-    inArgs.vendorDlls = lConcat ? ['vendor'] : ['angular', 'bowser', 'lodash', 'typescript'];
+    inArgs.vendorDlls = lConcat ? ['vendor'] : ['angular', 'bowser', 'lodash', 'typescript', 'styleLoader', 'cssLoader'];
 
     inArgs.libNames = ['lib-common', 'lib-common2'];
 

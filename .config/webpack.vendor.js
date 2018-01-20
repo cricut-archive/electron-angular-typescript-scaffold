@@ -10,7 +10,9 @@ module.exports = function(inArgs) {
     'angular': ['angular', 'angular-cookies', '@uirouter/angularjs'],
     'bowser': ['bowser'],
     'lodash': ['lodash'],
-    'typescript': ['tslib']
+    'typescript': ['tslib'],
+    'styleLoader': ['./node_modules/style-loader/lib/urls', './node_modules/style-loader/lib/addStyles', './node_modules/style-loader/lib/addStyleUrl' ],
+    'cssLoader': ['./node_modules/css-loader/lib/css-base']
   };
 
   //FLATTEN LIST OUR FOR CONCAT FILE

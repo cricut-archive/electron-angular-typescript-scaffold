@@ -46,7 +46,7 @@ module.exports = function(inArgs) {
               include: [inArgs.appName, ...inArgs.libNames].map(p => path.resolve(__dirname, '..', 'modules', p)), 
               options: { transpileOnly: true } },             
             { test: /\.less$/, loader: [
-                { loader: "style-loader" },
+                { loader: "style-loader", options: { hmr: false, sourceMap: true } },
                 { loader: "css-loader", options: { sourceMap: true } }, 
                 { loader: "less-loader", options: { sourceMap: true } }],
             },
@@ -103,32 +103,44 @@ module.exports = function(inArgs) {
         })
     );
 
-    /*
-    n           html    css    other
-    lib-common  *
-    lib-common          *
-    lib-common                 *
-
-    lib-common&html&css?
-    lib-common&html?
-    lib-common?
-    */
-
     
+    const lChunkLibNames = [inArgs.appName, ...inArgs.libNames, 'node-modules'];
+    const lChunkTests = [];
+    for(let i=0; i<lChunkLibNames.length; i++ ) {
+        lChunkTests[i] = [
+            new RegExp(`.*[/\\\\]${lChunkLibNames[i]}[/\\\\].*`), new RegExp(`.*[/\\\\]${lChunkLibNames[i]}[/\\\\].*\.(tmpl|less)$`)
+        ];
+    }
 
+    for(let i=0; i<lChunkLibNames.length; i++ ) {
+        const n = lChunkLibNames[i];
+        
+        if (n !== inArgs.appName) {
+            lWebpackSettings.plugins.push( 
+                new webpack.optimize.CommonsChunkPlugin({
+                    name: _.camelCase(n),
+                    minChunks: (m,c) => {
+                        const lNextFolder = lChunkTests.slice(i).map(t => t[0].test(m.resource));
+                        const lCurrentFolder = lNextFolder.shift();
+                        const lCurrentAsset = lChunkTests.slice(i)[0][1].test(m.resource);
 
-    for(let i=0; i<inArgs.libNames.length; i++ ) {
-        const n = inArgs.libNames[i];
+                        return _.some(lNextFolder) || (lCurrentFolder);
+                    }
+                }));
+        }
+
         lWebpackSettings.plugins.push( 
             new webpack.optimize.CommonsChunkPlugin({
-                name: _.camelCase(n),
+                name: _.camelCase(n)+'Asset',
                 minChunks: (m,c) => {
-                    const lLibTest = inArgs.libNames.slice(i).map(n => new RegExp(`[/\\\\]${n}[/\\\\]`));
-                    const lLibMatch = lLibTest.map( t => t.test(m.resource));
-                    //console.log(`${_.some(lLibMatch)}\t${n}\t${m.resource}`);
-                    return _.some(lLibMatch);
+                    const lNextFolder = lChunkTests.slice(i).map(t => t[0].test(m.resource));
+                    const lCurrentFolder = lNextFolder.shift();
+                    const lCurrentAsset = lChunkTests.slice(i)[0][1].test(m.resource);
+
+                    return lResult = _.some(lNextFolder) || (lCurrentFolder && lCurrentAsset);
                 }
             }));
+
     }
     
     lWebpackSettings.plugins.push(new webpack.optimize.CommonsChunkPlugin({
