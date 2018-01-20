@@ -88,7 +88,7 @@ module.exports = function(inArgs) {
     Array.prototype.push.apply(lWebpackSettings.plugins, lVendorDllPlugin);
         
     if (lUglify) {
-        lWebpackSettings.plugins.push(new webpack.optimize.UglifyJsPlugin({ beautify: false, comments: false }));
+        lWebpackSettings.plugins.push(new webpack.optimize.UglifyJsPlugin({ beautify: false, comments: false, sourceMap: true }));
     }
 
     lWebpackSettings.plugins.push(
@@ -103,44 +103,45 @@ module.exports = function(inArgs) {
         })
     );
 
-    
-    const lChunkLibNames = [inArgs.appName, ...inArgs.libNames, 'node-modules'];
-    const lChunkTests = [];
-    for(let i=0; i<lChunkLibNames.length; i++ ) {
-        lChunkTests[i] = [
-            new RegExp(`.*[/\\\\]${lChunkLibNames[i]}[/\\\\].*`), new RegExp(`.*[/\\\\]${lChunkLibNames[i]}[/\\\\].*\.(tmpl|less)$`)
-        ];
-    }
+    if (!lConcat) {
+        const lChunkLibNames = [inArgs.appName, ...inArgs.libNames, 'node-modules'];
+        const lChunkTests = [];
+        for(let i=0; i<lChunkLibNames.length; i++ ) {
+            lChunkTests[i] = [
+                new RegExp(`.*[/\\\\]${lChunkLibNames[i]}[/\\\\].*`), new RegExp(`.*[/\\\\]${lChunkLibNames[i]}[/\\\\].*\.(tmpl|less)$`)
+            ];
+        }
 
-    for(let i=0; i<lChunkLibNames.length; i++ ) {
-        const n = lChunkLibNames[i];
-        
-        if (n !== inArgs.appName) {
+        for(let i=0; i<lChunkLibNames.length; i++ ) {
+            const n = lChunkLibNames[i];
+
+            if (n !== inArgs.appName) {
+                lWebpackSettings.plugins.push( 
+                    new webpack.optimize.CommonsChunkPlugin({
+                        name: _.camelCase(n),
+                        minChunks: (m,c) => {
+                            const lNextFolder = lChunkTests.slice(i).map(t => t[0].test(m.resource));
+                            const lCurrentFolder = lNextFolder.shift();
+                            const lCurrentAsset = lChunkTests.slice(i)[0][1].test(m.resource);
+
+                            return _.some(lNextFolder) || (lCurrentFolder);
+                        }
+                    }));
+            }
+
             lWebpackSettings.plugins.push( 
                 new webpack.optimize.CommonsChunkPlugin({
-                    name: _.camelCase(n),
+                    name: _.camelCase(n)+'Asset',
                     minChunks: (m,c) => {
                         const lNextFolder = lChunkTests.slice(i).map(t => t[0].test(m.resource));
                         const lCurrentFolder = lNextFolder.shift();
                         const lCurrentAsset = lChunkTests.slice(i)[0][1].test(m.resource);
 
-                        return _.some(lNextFolder) || (lCurrentFolder);
+                        return lResult = _.some(lNextFolder) || (lCurrentFolder && lCurrentAsset);
                     }
                 }));
+
         }
-
-        lWebpackSettings.plugins.push( 
-            new webpack.optimize.CommonsChunkPlugin({
-                name: _.camelCase(n)+'Asset',
-                minChunks: (m,c) => {
-                    const lNextFolder = lChunkTests.slice(i).map(t => t[0].test(m.resource));
-                    const lCurrentFolder = lNextFolder.shift();
-                    const lCurrentAsset = lChunkTests.slice(i)[0][1].test(m.resource);
-
-                    return lResult = _.some(lNextFolder) || (lCurrentFolder && lCurrentAsset);
-                }
-            }));
-
     }
     
     lWebpackSettings.plugins.push(new webpack.optimize.CommonsChunkPlugin({
