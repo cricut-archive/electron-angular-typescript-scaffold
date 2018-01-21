@@ -30,6 +30,8 @@
     "codecov": "^3.0.0",
     "css-loader": "^0.28.9",
     "express": "^4.16.2",
+    "file-loader": "^1.1.6",
+    "font-awesome": "^4.7.0",
     "fork-ts-checker-webpack-plugin": "0.3.0",
     "fs-extra": "^5.0.0",
     "glob": "^7.1.2",

@@ -52,7 +52,9 @@ module.exports = function(inArgs) {
             },
             { test: /\.tmpl$/, loader: 'html-loader',              
               options: { attrs: false, exportAsDefault: true }                
-            }     
+            },
+            { test: /\.(ttf|eot|svg|woff|woff2)(\?.*)?$/, loader: "file-loader",
+              options: { name:'../fonts/[name].[ext]' } }     
         ]
     };
 

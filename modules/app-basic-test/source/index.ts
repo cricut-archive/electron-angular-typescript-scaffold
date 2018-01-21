@@ -2,6 +2,8 @@
 import { bootstrap, auto } from 'angular';
 import { ngBootstrap } from './angular/ng-bootstrap';
 
+import '../../../node_modules/font-awesome/less/font-awesome.less';
+
 let ngApp: auto.IInjectorService;
 
 ( () => {

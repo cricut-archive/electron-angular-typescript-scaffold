@@ -11,6 +11,7 @@ module.exports = function(inArgs) {
     'bowser': ['bowser'],
     'lodash': ['lodash'],
     'typescript': ['tslib'],
+    'fontAwesome': ['./node_modules/font-awesome/less/font-awesome.less'],
     'styleLoader': ['./node_modules/style-loader/lib/urls', './node_modules/style-loader/lib/addStyles', './node_modules/style-loader/lib/addStyleUrl' ],
     'cssLoader': ['./node_modules/css-loader/lib/css-base']
   };
@@ -34,6 +35,18 @@ module.exports = function(inArgs) {
     entry: lVendorEntry,
 
     devtool: 'source-map',
+
+    module: {
+      loaders: [
+        { test: /\.less$/, loader: [
+          { loader: "style-loader", options: { hmr: false, sourceMap: true } },
+          { loader: "css-loader", options: { sourceMap: true } }, 
+          { loader: "less-loader", options: { sourceMap: true } }],
+        },
+        { test: /\.(ttf|eot|svg|woff|woff2)(\?.*)?$/, loader: "file-loader",
+          options: { name:'../../fonts/vendor/[name].[ext]' } }  
+      ]
+    },
 
     output: {
       path: path.join(__dirname, '..', '_dist', 'js', lConcat ? '.' : 'vendor'),
