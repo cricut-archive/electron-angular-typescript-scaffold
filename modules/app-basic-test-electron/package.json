@@ -1,0 +1,11 @@
+{
+  "name": "app-basic-test-electron",
+  "version": "1.0.0",
+  "description": "",
+  "main": "../../_dist/app-basic-test-electron.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

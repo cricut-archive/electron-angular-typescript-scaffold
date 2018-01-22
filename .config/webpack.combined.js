@@ -3,6 +3,7 @@ const webpack = require("webpack");
 const wpPluginHtml = require('html-webpack-plugin');
 const wpPluginTsChecker = require('fork-ts-checker-webpack-plugin');
 const wpKebabChunkRename = require('./plugin/kebab-chunk-rename');
+//const wpWebpackConstName = require('./plugin/webpack-const-name-plugin');
 
 const path = require("path");
 
@@ -13,6 +14,7 @@ module.exports = function(inArgs) {
     const lUglify = (inArgs && inArgs.uglify); //--env.uglify
     const lConcat = (inArgs && inArgs.concat); //--env.concat
     const lVendor = (inArgs && inArgs.vendor); //--env.vendor
+    const lElectron = (inArgs && (inArgs.target === 'electron-main'));
 
     if (lConcat) {
         let lVendorEntry = [];
@@ -23,6 +25,11 @@ module.exports = function(inArgs) {
     const lConfig = {};
     lConfig.context = path.normalize(__dirname + '/..');
     lConfig.devtool = 'source-map';
+    inArgs.target && (lConfig.target = inArgs.target);
+
+    if (lElectron) {
+        lConfig.node = { __dirname: false, __filename: false }
+    }
 
     //ENTRY
     {
@@ -64,7 +71,9 @@ module.exports = function(inArgs) {
             );
             lConfig.module.loaders.push(
                 { test: /\.(ttf|eot|svg|woff|woff2)(\?.*)?$/, loader: "file-loader",
-                  options: { name: (lConcat ? '../' : '../../') + 'fonts/[name].[ext]' } } 
+                  options: { name: '/../../fonts/[name].[ext]',
+                  publicPath: function(inPath) { return inPath.replace('/../..', './'); } }  
+                } 
             );
         }
     }
@@ -112,6 +121,8 @@ module.exports = function(inArgs) {
 
         (!lVendor) && (lConfig.plugins.push( new wpKebabChunkRename() ));
 
+        //(lNode) && (lConfig.plugins.push( new wpWebpackConstName() ));
+
         (!lVendor) && (lConfig.plugins.push(
             new wpPluginTsChecker({
                 tsconfig: path.resolve(['.', 'modules', inArgs.appName, 'tsconfig.json'].join('/')),
@@ -121,7 +132,7 @@ module.exports = function(inArgs) {
             })
         ));
 
-        (!lVendor) && (lConfig.plugins.push(
+        ((!lVendor) && (!lElectron)) && (lConfig.plugins.push(
             new wpPluginHtml({
                 title: 'Webpack Test App',
                 filename: '../index.html',
@@ -133,7 +144,7 @@ module.exports = function(inArgs) {
             })
         ));
 
-        if ((!lVendor) && (!lConcat)) {
+        if ((!lVendor) && (!lElectron) && (!lConcat)) {
 
             const lChunkLibNames = [inArgs.appName, ...inArgs.libNames, 'node-modules'];
             const lChunkTests = [];
@@ -185,6 +196,10 @@ module.exports = function(inArgs) {
             lConfig.output.path = path.join(__dirname, '..', '_dist', 'js', lConcat ? '.' : 'vendor');
             lConfig.output.filename = '[name].dll.js';
             lConfig.output.library = '[name]Dll';
+        } else if (lElectron) {
+            lConfig.output.path = path.join(__dirname, '..', '_dist');
+            lConfig.output.filename = '[name].js';
+            lConfig.output.library = '[name]';            
         } else {
             lConfig.output.path = path.join(__dirname, '..', '_dist', 'js');
             lConfig.output.filename = '[name].js';

@@ -129,20 +129,8 @@ async function Serve(inArgs: minimist.ParsedArgs) {
 }
 
 async function Test(inArgs: minimist.ParsedArgs) {
-    //const lWebpackPath:string = './node_modules/webpack/bin/webpack.js';
     const lKarmaPath:string = './node_modules/karma/bin/karma';
     
-    /*const lTarget = inArgs._[0];
-    const lWebPackArgs: string[] = [
-            '--config', 
-            `./modules/${lTarget}/webpack.js`,
-            ... inArgs.v? ['--verbose'] : [],
-            ... inArgs.r? ['--env.concat', '--env.uglify'] : [],
-            '--env.test',
-            '--bail', '--colors'];  
-    
-    await RunTerminal(lWebpackPath, lWebPackArgs, '.', false);*/
-
     const lAppName = inArgs._[0];
     const lLibNames = DependantModules(lAppName);
 
