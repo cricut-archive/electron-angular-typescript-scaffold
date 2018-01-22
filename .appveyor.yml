@@ -17,7 +17,7 @@ install:
   - npm install
   
 build_script:
-  - node .\node_modules\karma\bin\karma start ./.config/karma.config.js
+  - npm run test -- app-basic-test
   - node .\node_modules\codecov\bin\codecov -t %CODECOV_KEY%
   - npm run clean
   - npm run build -- app-basic-test --vendor

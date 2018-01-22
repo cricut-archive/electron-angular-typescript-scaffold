@@ -12,7 +12,6 @@ const glob = require('glob');
 module.exports = function(inArgs) {
     const lUglify = (inArgs && inArgs.uglify); //--env.uglify
     const lConcat = (inArgs && inArgs.concat); //--env.concat
-    const lTest = (inArgs && inArgs.test); //--env.test
     const lVendor = (inArgs && inArgs.vendor); //--env.vendor
 
     if (lConcat) {
@@ -30,10 +29,8 @@ module.exports = function(inArgs) {
         lConfig.entry = {};
         if (lVendor) {
             lConfig.entry = inArgs.vendorEntry;
-        } else if (lTest) {
-            lConfig.entry['karmaTests'] = glob.sync('./modules/**/*.spec.ts');
         } else {
-            lConfig.entry[_.camelCase(inArgs.appName)] = ['.', 'modules', inArgs.appName, 'source', 'index.ts'].join('/');
+            lConfig.entry[_.camelCase(inArgs.appName)] = inArgs.appEntry;
         }
     }
 
@@ -45,7 +42,7 @@ module.exports = function(inArgs) {
         {
             lConfig.module.loaders = [];
             !lVendor && (lConfig.module.loaders.push(
-                { test: lTest ? /.*\.ts$/ : /^(?!.*\.spec\.ts$).*\.ts$/, loader: 'ts-loader', 
+                { test: /^(?!.*\.spec\.ts$).*\.ts$/, loader: 'ts-loader', 
                   include: [inArgs.appName, ...inArgs.libNames].map(p => path.resolve(__dirname, '..', 'modules', p)), 
                   options: { transpileOnly: true } }
             ));
@@ -124,7 +121,7 @@ module.exports = function(inArgs) {
             })
         ));
 
-        (!lVendor) && (!lTest) && (lConfig.plugins.push(
+        (!lVendor) && (lConfig.plugins.push(
             new wpPluginHtml({
                 title: 'Webpack Test App',
                 filename: '../index.html',
@@ -136,7 +133,7 @@ module.exports = function(inArgs) {
             })
         ));
 
-        if ((!lVendor)&&(!lTest)&&(!lConcat)) {
+        if ((!lVendor) && (!lConcat)) {
 
             const lChunkLibNames = [inArgs.appName, ...inArgs.libNames, 'node-modules'];
             const lChunkTests = [];
@@ -188,10 +185,6 @@ module.exports = function(inArgs) {
             lConfig.output.path = path.join(__dirname, '..', '_dist', 'js', lConcat ? '.' : 'vendor');
             lConfig.output.filename = '[name].dll.js';
             lConfig.output.library = '[name]Dll';
-        } else if (lTest) {
-            lConfig.output.path = path.join(__dirname, '..', '_dist', 'js');
-            lConfig.output.filename = '[name].test.js';
-            lConfig.output.library = '[name]';
         } else {
             lConfig.output.path = path.join(__dirname, '..', '_dist', 'js');
             lConfig.output.filename = '[name].js';

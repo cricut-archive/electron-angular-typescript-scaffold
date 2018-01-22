@@ -25,7 +25,11 @@
     "@types/node": "9.3.0",
     "@types/opn": "^5.1.0",
     "@uirouter/angularjs": "1.0.13",
+    "angular": "1.6.8",
+    "angular-cookies": "1.6.8",
     "angular-ui-bootstrap": "^2.5.6",
+    "bootstrap": "3.3.7",
+    "bowser": "1.9.1",
     "chalk": "^2.3.0",
     "chokidar": "^2.0.0",
     "codecov": "^3.0.0",
@@ -62,15 +66,9 @@
     "tslint-loader": "3.5.3",
     "typescript": "2.6.2",
     "webpack": "3.10.0",
-    "webpack-bundle-analyzer": "2.9.2",
-    "angular": "1.6.8",
-    "angular-cookies": "1.6.8",
-    "bootstrap": "3.3.7",
-    "bowser": "1.9.1"
+    "webpack-bundle-analyzer": "2.9.2"
   },
-  "dependencies": {
-
-  },
+  "dependencies": {},
   "engines": {
     "node": "9.2.1",
     "npm": "5.5.1"

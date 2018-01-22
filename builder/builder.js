@@ -136,7 +136,10 @@ function Test(inArgs) {
                 '--bail', '--colors'];
         
         await RunTerminal(lWebpackPath, lWebPackArgs, '.', false);*/
-        yield RunTerminal(lKarmaPath, ['start', './.config/karma.config.js'], '.', false);
+        const lAppName = inArgs._[0];
+        const lLibNames = DependantModules(lAppName);
+        yield RunTerminal(lKarmaPath, ['start', './.config/karma.config.js',
+            `--appName=${lAppName}`, `--libNames=${lLibNames.join(',')}`], '.', false);
     });
 }
 function Profile(inArgs) {
@@ -157,6 +160,18 @@ function Profile(inArgs) {
         opn('http://webpack.github.com/analyse');
         yield RunTerminal(lWebpackAnalyzer, [`./_dist/${lTarget}.json`], '.', false);
     });
+}
+function DependantModules(inApp) {
+    const lConfig = JSON.parse(fs.readFileSync(`./modules/${inApp}/tsconfig.json`).toString());
+    const lModuleList = [];
+    const lPaths = lConfig && lConfig.compilerOptions && lConfig.compilerOptions.paths;
+    const lModuleNames = Object.keys(lPaths || {}).map(k => k.substr(0, k.indexOf('/')));
+    Array.prototype.push.apply(lModuleList, lModuleNames);
+    for (let i = 0; i < lModuleNames.length; i++) {
+        const lDepModules = DependantModules(lModuleNames[i]);
+        Array.prototype.push.apply(lModuleList, lDepModules);
+    }
+    return _.uniq(lModuleList);
 }
 // WRAP MAIN IN ASYNC TO KICK OFF AWAIT CHAIN
 function _main() {

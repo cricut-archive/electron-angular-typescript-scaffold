@@ -2,6 +2,17 @@
 // Generated on Tue May 02 2017 20:55:08 GMT-0600 (Mountain Daylight Time)
 
 module.exports = function(config) {
+
+  const lFiles = [
+    { pattern: `./${config.appName}/**/*.ts` }
+  ];
+  const lLibNames = config.libNames.split(',');
+  lLibNames.map(n => lFiles.push( { pattern: `./${n}/**/*.ts` } ));
+  
+  const lLibPaths = {};
+  lLibNames.map(n => lLibPaths[`${n}/*`] = [`./${n}/source/*`] );
+  console.log(lLibPaths);
+
     config.set({
   
       // base path that will be used to resolve all patterns (eg. files, exclude)
@@ -14,7 +25,7 @@ module.exports = function(config) {
   
       // list of files / patterns to load in the browser
       files: [
-        { pattern: './**/*.ts' },
+        ...lFiles,
         
         //{ pattern: './_dist/test/**/*.json', served: true, included: true },
       ],
@@ -36,10 +47,7 @@ module.exports = function(config) {
         compilerOptions: {
           module: "commonjs",
           "baseUrl": ".",
-          "paths": {
-            "lib-common/*": [ "./lib-common/source/*" ],
-            "lib-common2/*": [ "./lib-common2/source/*" ]
-          }
+          "paths": lLibPaths
         },
 
         reports: {

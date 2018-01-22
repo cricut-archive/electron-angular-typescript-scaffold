@@ -8,6 +8,8 @@ module.exports = function(inArgs) {
     const lConfig = require('../../.config/webpack.combined');
 
     inArgs.appName = 'app-basic-test';
+    inArgs.appEntry = ['./modules/app-basic-test/source/index.ts'];
+
     inArgs.libNames = ['lib-common', 'lib-common2'];
 
     inArgs.vendorEntry = {
