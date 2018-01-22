@@ -20,6 +20,7 @@ build_script:
   - node .\node_modules\karma\bin\karma start ./.config/karma.config.js
   - node .\node_modules\codecov\bin\codecov -t %CODECOV_KEY%
   - npm run clean
-  - npm run build -- vendor app-basic-test
+  - npm run build -- app-basic-test --vendor
+  - npm run build -- app-basic-test
 
 test: off
