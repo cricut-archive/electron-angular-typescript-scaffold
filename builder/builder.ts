@@ -38,9 +38,10 @@ async function Build(inArgs: minimist.ParsedArgs) {
         const lTarget = inArgs._[i];
         const lWebPackArgs: string[] = [
                 '--config', 
-                (lTarget === 'vendor') ? './.config/webpack.vendor.js' : `./modules/${lTarget}/webpack.js`,
-                ... inArgs.v? ['--verbose'] : [],
+                `./modules/${lTarget}/webpack.js`,
+                ... inArgs.ven? ['--env.vendor'] : [],
                 ... inArgs.r? ['--env.concat', '--env.uglify'] : [],
+                ... inArgs.v? ['--verbose'] : [],
                 '--bail', '--colors'];  
         
         await RunTerminal(lWebpackPath, lWebPackArgs, '.', false); 
@@ -128,10 +129,10 @@ async function Serve(inArgs: minimist.ParsedArgs) {
 }
 
 async function Test(inArgs: minimist.ParsedArgs) {
-    const lWebpackPath:string = './node_modules/webpack/bin/webpack.js';
+    //const lWebpackPath:string = './node_modules/webpack/bin/webpack.js';
     const lKarmaPath:string = './node_modules/karma/bin/karma';
     
-    const lTarget = inArgs._[0];
+    /*const lTarget = inArgs._[0];
     const lWebPackArgs: string[] = [
             '--config', 
             `./modules/${lTarget}/webpack.js`,
@@ -140,7 +141,7 @@ async function Test(inArgs: minimist.ParsedArgs) {
             '--env.test',
             '--bail', '--colors'];  
     
-    await RunTerminal(lWebpackPath, lWebPackArgs, '.', false); 
+    await RunTerminal(lWebpackPath, lWebPackArgs, '.', false);*/
 
     await RunTerminal(lKarmaPath, ['start', './.config/karma.config.js'], '.', false);
 
@@ -153,7 +154,9 @@ async function Profile(inArgs: minimist.ParsedArgs) {
     const lTarget = inArgs._[0];
 
     const lWebPackArgs: string[] = [ 
-        '--config', (lTarget === 'vendor') ? './.config/webpack.vendor.js' : `./modules/${lTarget}/webpack.js`, 
+        '--config', 
+        `./modules/${lTarget}/webpack.js`, 
+        ... inArgs.ven? ['--env.vendor'] : [],
         '--profile', 
         '--json' ];
 
@@ -171,8 +174,8 @@ async function _main() {
     try {
         const lArgv = minimist(process.argv.slice(2), {
             string: [ 'command', 'environment' ],
-            alias: { c: 'command', r: 'release', e: 'environment', v: 'verbose' },
-            default: { release: false }
+            alias: { c: 'command', r: 'release', e: 'environment', v: 'verbose', ven: 'vendor' },
+            default: { release: false, vendor: false }
           });
         lArgv.v && console.log(lArgv);
         lArgv.v && console.log('');
@@ -180,6 +183,7 @@ async function _main() {
         console.log(chalk.green(`COMMAND\t\t[${chalk.yellow(lArgv.c)}]`));
         lArgv.e && console.log(chalk.green(`ENVIRONMENT\t[${chalk.yellow(lArgv.e)}]`));
         console.log(chalk.green(`RELEASE\t\t[${chalk.yellow(lArgv.r)}]`));
+        console.log(chalk.green(`VENDOR \t\t[${chalk.yellow(lArgv.ven)}]`));
         lArgv._.length && console.log(chalk.green(`TARGET(S)\t[${chalk.yellow(lArgv._.join(', '))}]`));
         console.log('');
         

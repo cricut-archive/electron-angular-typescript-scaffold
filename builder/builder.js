@@ -44,9 +44,10 @@ function Build(inArgs) {
             const lTarget = inArgs._[i];
             const lWebPackArgs = [
                 '--config',
-                (lTarget === 'vendor') ? './.config/webpack.vendor.js' : `./modules/${lTarget}/webpack.js`,
-                ...inArgs.v ? ['--verbose'] : [],
+                `./modules/${lTarget}/webpack.js`,
+                ...inArgs.ven ? ['--env.vendor'] : [],
                 ...inArgs.r ? ['--env.concat', '--env.uglify'] : [],
+                ...inArgs.v ? ['--verbose'] : [],
                 '--bail', '--colors'
             ];
             yield RunTerminal(lWebpackPath, lWebPackArgs, '.', false);
@@ -123,18 +124,18 @@ function Serve(inArgs) {
 }
 function Test(inArgs) {
     return __awaiter(this, void 0, void 0, function* () {
-        const lWebpackPath = './node_modules/webpack/bin/webpack.js';
+        //const lWebpackPath:string = './node_modules/webpack/bin/webpack.js';
         const lKarmaPath = './node_modules/karma/bin/karma';
-        const lTarget = inArgs._[0];
-        const lWebPackArgs = [
-            '--config',
-            `./modules/${lTarget}/webpack.js`,
-            ...inArgs.v ? ['--verbose'] : [],
-            ...inArgs.r ? ['--env.concat', '--env.uglify'] : [],
-            '--env.test',
-            '--bail', '--colors'
-        ];
-        yield RunTerminal(lWebpackPath, lWebPackArgs, '.', false);
+        /*const lTarget = inArgs._[0];
+        const lWebPackArgs: string[] = [
+                '--config',
+                `./modules/${lTarget}/webpack.js`,
+                ... inArgs.v? ['--verbose'] : [],
+                ... inArgs.r? ['--env.concat', '--env.uglify'] : [],
+                '--env.test',
+                '--bail', '--colors'];
+        
+        await RunTerminal(lWebpackPath, lWebPackArgs, '.', false);*/
         yield RunTerminal(lKarmaPath, ['start', './.config/karma.config.js'], '.', false);
     });
 }
@@ -144,7 +145,9 @@ function Profile(inArgs) {
         const lWebpackAnalyzer = './node_modules/webpack-bundle-analyzer/lib/bin/analyzer.js';
         const lTarget = inArgs._[0];
         const lWebPackArgs = [
-            '--config', (lTarget === 'vendor') ? './.config/webpack.vendor.js' : `./modules/${lTarget}/webpack.js`,
+            '--config',
+            `./modules/${lTarget}/webpack.js`,
+            ...inArgs.ven ? ['--env.vendor'] : [],
             '--profile',
             '--json'
         ];
@@ -161,14 +164,15 @@ function _main() {
         try {
             const lArgv = minimist(process.argv.slice(2), {
                 string: ['command', 'environment'],
-                alias: { c: 'command', r: 'release', e: 'environment', v: 'verbose' },
-                default: { release: false }
+                alias: { c: 'command', r: 'release', e: 'environment', v: 'verbose', ven: 'vendor' },
+                default: { release: false, vendor: false }
             });
             lArgv.v && console.log(lArgv);
             lArgv.v && console.log('');
             console.log(chalk_1.default.green(`COMMAND\t\t[${chalk_1.default.yellow(lArgv.c)}]`));
             lArgv.e && console.log(chalk_1.default.green(`ENVIRONMENT\t[${chalk_1.default.yellow(lArgv.e)}]`));
             console.log(chalk_1.default.green(`RELEASE\t\t[${chalk_1.default.yellow(lArgv.r)}]`));
+            console.log(chalk_1.default.green(`VENDOR \t\t[${chalk_1.default.yellow(lArgv.ven)}]`));
             lArgv._.length && console.log(chalk_1.default.green(`TARGET(S)\t[${chalk_1.default.yellow(lArgv._.join(', '))}]`));
             console.log('');
             if (lArgv.c === 'clean')

@@ -13,7 +13,7 @@ export class ctrlRouteHomeLanding {
         $log.debug(`+ ${ctrlRouteHomeLanding.$tsName}`);
 
         const lRect = new Rect();
-        lRect.Expand(5);
+        lRect.Expand(8);
 
         this.$scope.$on('$destroy', () => {
             this.$log.debug(`- ${ctrlRouteHomeLanding.$tsName}`);

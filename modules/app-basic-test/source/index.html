@@ -10,9 +10,9 @@
 </head>
 
 <body>
-  <i class="fa fa-thermometer-empty" aria-hidden="true"></i>
-  <div class="box" ui-view>Loading...</div>
   
+  <div ui-view="navigation"></div>
+  <div class="container" ui-view>Loading...</div>
   
   <% for (key in htmlWebpackPlugin.options.jsVendor) { %><script type="text/javascript" src="<%= htmlWebpackPlugin.options.jsVendor[key] %>"></script>
   <% } for (key in htmlWebpackPlugin.files.js) { %><script defer type="text/javascript" src="<%= htmlWebpackPlugin.files.js[key] %>"></script>
