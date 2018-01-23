@@ -19,6 +19,17 @@ describe('Rect', () => {
         });
     });
 
+    describe('DumbFunction', () => {
+        it('should do stuff', () => {
+            const lRect: Rect = new Rect();
+            lRect.DumbFunction(1);
+            expect(lRect.Top).toBe(0);
+            expect(lRect.Left).toBe(0);
+            expect(lRect.Right).toBe(0);
+            expect(lRect.Bottom).toBe(0);
+        });
+    });
+
     describe('Clone', () => {
         it('should create an independant clone', () => {
             expect(true).toBe(true);

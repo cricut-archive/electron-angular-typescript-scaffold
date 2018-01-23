@@ -21,6 +21,14 @@ export class Rect {
         this.mSize.Height += (inSize * 2);
     }
 
+    public DumbFunction(inValue: number) {
+        // DUMB FUNCTION
+        this.mPoint.x *= inValue;
+        this.mPoint.y *= inValue;
+        this.mSize.Width *= inValue;
+        this.mSize.Height *= inValue;
+    }
+
     public get Width(): number {
         return this.mSize.Width;
     }
