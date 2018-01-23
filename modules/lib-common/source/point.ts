@@ -41,4 +41,19 @@ export class Point {
         return this;
     }
 
+    public Average(inPoint: Point[]): Point {
+        const lXPoints = inPoint.map( (p) => p.x);
+        const lYPoints = inPoint.map( (p) => p.y);
+
+        let lXAvg = 0;
+        lXPoints.map( (p) => lXAvg += p);
+        lXAvg /= lXPoints.length;
+
+        let lYAvg = 0;
+        lYPoints.map( (p) => lYAvg += p);
+        lYAvg /= lYPoints.length;
+
+        return new Point(lXAvg, lYAvg);
+    }
+
 }
