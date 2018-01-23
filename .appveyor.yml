@@ -18,7 +18,6 @@ install:
   
 build_script:
   - npm run test -- app-basic-test
-  - echo %CODECOV_KEY%
   - node .\node_modules\codecov\bin\codecov -t %CODECOV_KEY%
   - npm run clean
   - npm run build -- app-basic-test --vendor
