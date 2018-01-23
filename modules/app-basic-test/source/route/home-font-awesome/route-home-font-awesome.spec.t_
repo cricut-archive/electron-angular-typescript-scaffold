@@ -1,0 +1,32 @@
+import { ICompileService, IRootScopeService, element, module, injector } from 'angular';
+import 'angular-mocks';
+import * as _ from 'lodash';
+
+import '../../angular/ng-module';
+import { dirRouteHomeFontAwesome } from './dir-route-home-font-awesome';
+
+describe('dirRouteHomeFontAwesome', () => {
+    // let compile: ICompileService;
+    let scope: IRootScopeService;
+    let dirElement: JQLite;
+
+    beforeEach( () => {
+        // Create a new dependency injector using the 'myApp' module
+        const app = injector(['appBasicTest']);
+
+        app.invoke(($rootScope, $compile) => {
+            // Get a new scope
+            scope = $rootScope.$new();
+
+            // Compile some HTML that uses the directive
+            dirElement = $compile(`<${_.kebabCase(dirRouteHomeFontAwesome.$tsName)} />`)(scope);
+            scope.$apply();
+        });
+    });
+
+    it('should have span element', () => {
+        const spanElement = dirElement.find('span');
+        expect(spanElement).toBeDefined();
+        expect(spanElement.text()).toEqual('This span is appended from directive.');
+    });
+});
