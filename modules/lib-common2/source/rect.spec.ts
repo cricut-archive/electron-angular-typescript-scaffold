@@ -30,6 +30,14 @@ describe('Rect', () => {
         });
     });
 
+    describe('Width', () => {
+        it('should create an independant clone', () => {
+            const lRect: Rect = new Rect();
+            lRect.Width = 5;
+            expect(lRect.Width).toBe(5);
+        });
+    });
+
     describe('Clone', () => {
         it('should create an independant clone', () => {
             expect(true).toBe(true);
