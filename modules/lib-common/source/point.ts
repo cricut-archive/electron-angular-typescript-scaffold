@@ -35,6 +35,10 @@ export class Point {
         return new Point(this.x, this.y);
     }
 
+    /**
+     * 
+     * @param inPoint 
+     */
     public Add(inPoint: Point): Point {
         this.x += inPoint.x;
         this.y += inPoint.y;
