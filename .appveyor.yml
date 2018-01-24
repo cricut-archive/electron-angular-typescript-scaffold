@@ -23,4 +23,7 @@ build_script:
   - npm run build -- app-basic-test --vendor
   - npm run build -- app-basic-test
 
+cache:
+  - node_modules -> package-lock.json 
+
 test: off
