@@ -12,6 +12,10 @@ matrix:
   - os: osx
     env: COMPILER=clang++
 
+cache:
+  directories:
+    - $HOME/.npm
+
 before_install:
 - rm -rf ~/.nvm
 - git clone --depth 1 https://github.com/creationix/nvm.git ~/.nvm
