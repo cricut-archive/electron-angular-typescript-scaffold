@@ -1,4 +1,3 @@
-
 // tslint:disable-next-line
 interface String {
     StartsWith(inString: string): boolean;

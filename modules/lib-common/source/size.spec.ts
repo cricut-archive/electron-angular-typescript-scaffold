@@ -1,4 +1,4 @@
-import {Size} from './size';
+import { Size } from './size';
 
 describe('Area', () => {
     it('should calculate the area', () => {

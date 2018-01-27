@@ -4,10 +4,10 @@ import * as _ from 'lodash';
 export class ngRegister {
     private static $log: ILogService = injector(['ng']).get('$log');
 
-    private static mItems: { [id: string]: string[]; } = {};
+    private static mItems: { [id: string]: string[] } = {};
 
     // TODO: MOVE OUT TO COMMON
-    private static STRIP_COMMENTS: RegExp = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
+    private static STRIP_COMMENTS: RegExp = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/gm;
     private static ARGUMENT_NAMES: RegExp = /([^\s,]+)/g;
     private static FUNCTION_NAME: RegExp = /(function )([^(\ ]+)/m;
 
@@ -18,9 +18,14 @@ export class ngRegister {
      * @param inInject Objects Angular DI string.
      * @param inModule Module to register object with.
      */
-    public static Add(inObject: any, inName: string, inInject: string[], inModule: IModule): string {
+    public static Add(
+        inObject: any,
+        inName: string,
+        inInject: string[],
+        inModule: IModule
+    ): string {
         const lParams: string[] = this.GetParamNames(inObject.prototype.constructor);
-        const lClassName: string|undefined = lParams.shift();
+        const lClassName: string | undefined = lParams.shift();
 
         if (!lClassName || !inName) {
             throw new Error('APPINJECT: Invalid Class Name');
@@ -28,13 +33,16 @@ export class ngRegister {
 
         Object.keys(this.mItems).forEach((k) => {
             if (this.mItems[k].indexOf(inName) !== -1) {
-                throw new Error(`APPINJECT: Resolve Name Collision ${inName} (${k} & ${inModule.name})`);
+                throw new Error(
+                    `APPINJECT: Resolve Name Collision ${inName} (${k} & ${
+                        inModule.name
+                    })`
+                );
             }
         });
 
         if (inInject.length !== lParams.length) {
             throw new Error(`APPINJECT: Inject Param Mismatch In ${inName}`);
-
         } else {
             inObject.$tsApp = inModule.name;
             inObject.$inject = inInject;
@@ -64,13 +72,14 @@ export class ngRegister {
     }
 
     public static GetParamNames(func: any): string[] {
-        const lBody: string = (func.toString()).replace(this.STRIP_COMMENTS, '');
+        const lBody: string = func.toString().replace(this.STRIP_COMMENTS, '');
         const lFunction: string = (lBody.match(this.FUNCTION_NAME) as string[])[2];
-        const lArgs: string[] = (lBody.slice(lBody.indexOf('(') + 1, lBody.indexOf(')'))
-                                    .match(this.ARGUMENT_NAMES)) || [];
+        const lArgs: string[] =
+            lBody
+                .slice(lBody.indexOf('(') + 1, lBody.indexOf(')'))
+                .match(this.ARGUMENT_NAMES) || [];
 
         lArgs.unshift(lFunction);
         return lArgs;
     }
-
 }

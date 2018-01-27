@@ -1,4 +1,10 @@
-import {IAttributes, IAugmentedJQuery, IDirective, IDirectiveFactory, ILogService} from 'angular';
+import {
+    IAttributes,
+    IAugmentedJQuery,
+    IDirective,
+    IDirectiveFactory,
+    ILogService
+} from 'angular';
 import { ngModule } from '../../angular/ng-module';
 import { ngRegister } from '../../angular/ng-register';
 
@@ -7,8 +13,12 @@ import { ctrlRouteHomeBootstrap } from './ctrl-route-home-bootstrap';
 import tmplRouteHomeBootstrap from './route-home-bootstrap.tmpl';
 
 export class dirRouteHomeBootstrap implements IDirective {
-    public static $tsName: string =
-        ngRegister.Add(dirRouteHomeBootstrap, 'dirRouteHomeBootstrap', ['$log'], ngModule.Get());
+    public static $tsName: string = ngRegister.Add(
+        dirRouteHomeBootstrap,
+        'dirRouteHomeBootstrap',
+        ['$log'],
+        ngModule.Get()
+    );
 
     // DIRECTIVE SETUP
     public restrict: string = 'E';

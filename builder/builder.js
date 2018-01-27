@@ -40,6 +40,11 @@ function Clean(inArgs) {
 function Build(inArgs) {
     return __awaiter(this, void 0, void 0, function* () {
         const lWebpackPath = './node_modules/webpack/bin/webpack.js';
+        const lPrettierPath = './node_modules/prettier/bin-prettier.js';
+        if ((!inArgs.ven) && (!inArgs.r)) {
+            console.log(process.cwd());
+            yield RunTerminal(lPrettierPath, ['--write', 'modules/**/*.{ts,json}'], '.', false);
+        }
         for (let i = 0; i < inArgs._.length; i++) {
             const lTarget = inArgs._[i];
             const lWebPackArgs = [
