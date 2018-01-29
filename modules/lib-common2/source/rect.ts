@@ -1,6 +1,5 @@
-
-import {Point} from 'lib-common/point';
-import {Size} from 'lib-common/size';
+import { Point } from 'lib-common/point';
+import { Size } from 'lib-common/size';
 
 export class Rect {
     constructor(public mPoint: Point = new Point(), public mSize: Size = new Size()) {}
@@ -17,8 +16,8 @@ export class Rect {
     public Expand(inSize: number) {
         this.mPoint.x -= inSize;
         this.mPoint.y -= inSize;
-        this.mSize.Width += (inSize * 2);
-        this.mSize.Height += (inSize * 2);
+        this.mSize.Width += inSize * 2;
+        this.mSize.Height += inSize * 2;
     }
 
     public get Width(): number {
@@ -66,13 +65,15 @@ export class Rect {
     }
 
     public get Center(): Point {
-        return new Point(this.Left + (this.Width / 2), this.Top + (this.Height / 2));
+        return new Point(this.Left + this.Width / 2, this.Top + this.Height / 2);
     }
 
     public ContainsPoint(inPoint: Point, scale: number): boolean {
-        return this.Left * scale <= inPoint.x
-            && this.Top * scale <= inPoint.y
-            && this.Right * scale >= inPoint.x
-            && this.Bottom * scale >= inPoint.y;
+        return (
+            this.Left * scale <= inPoint.x &&
+            this.Top * scale <= inPoint.y &&
+            this.Right * scale >= inPoint.x &&
+            this.Bottom * scale >= inPoint.y
+        );
     }
 }

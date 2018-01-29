@@ -6,8 +6,12 @@ import { ctrlRouteNavigation } from './ctrl-route-navigation';
 import tmplRouteNavigation from './route-navigation.tmpl';
 
 export class dirRouteNavigation implements IDirective {
-    public static $tsName: string =
-        ngRegister.Add(dirRouteNavigation, 'dirRouteNavigation', ['$log'], ngModule.Get());
+    public static $tsName: string = ngRegister.Add(
+        dirRouteNavigation,
+        'dirRouteNavigation',
+        ['$log'],
+        ngModule.Get()
+    );
 
     // DIRECTIVE SETUP
     public restrict: string = 'E';

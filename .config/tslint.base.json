@@ -21,7 +21,9 @@
               ]
             }
           ],
-        "ordered-imports": false
+        "ordered-imports": false,
+        "trailing-comma": "never",
+        "object-literal-key-quotes": [true, "as-needed"]
     },
     "rulesDirectory": []
 }

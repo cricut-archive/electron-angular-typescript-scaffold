@@ -33,6 +33,12 @@ async function Clean(inArgs: minimist.ParsedArgs) {
 
 async function Build(inArgs: minimist.ParsedArgs) {
     const lWebpackPath:string = './node_modules/webpack/bin/webpack.js';
+    const lPrettierPath:string = './node_modules/prettier/bin-prettier.js';
+
+    if ((!inArgs.ven)&&(!inArgs.r)) {
+        console.log(process.cwd());
+        await RunTerminal(lPrettierPath, ['--write', 'modules/**/*.{ts,json}'], '.', false); 
+    }
 
     for(let i=0; i < inArgs._.length; i++) {
         const lTarget = inArgs._[i];

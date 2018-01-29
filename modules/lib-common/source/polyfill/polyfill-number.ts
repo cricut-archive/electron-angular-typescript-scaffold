@@ -1,4 +1,3 @@
-
 // tslint:disable-next-line
 interface Number {
     RoundDecimal(inPlace: number): number;

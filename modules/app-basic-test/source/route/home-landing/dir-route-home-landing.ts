@@ -1,4 +1,10 @@
-import {IAttributes, IAugmentedJQuery, IDirective, IDirectiveFactory, ILogService} from 'angular';
+import {
+    IAttributes,
+    IAugmentedJQuery,
+    IDirective,
+    IDirectiveFactory,
+    ILogService
+} from 'angular';
 import { ngModule } from '../../angular/ng-module';
 import { ngRegister } from '../../angular/ng-register';
 
@@ -8,8 +14,12 @@ import './route-home-landing.less';
 import tmplRouteHomeLanding from './route-home-landing.tmpl';
 
 export class dirRouteHomeLanding implements IDirective {
-    public static $tsName: string =
-        ngRegister.Add(dirRouteHomeLanding, 'dirRouteHomeLanding', ['$log'], ngModule.Get());
+    public static $tsName: string = ngRegister.Add(
+        dirRouteHomeLanding,
+        'dirRouteHomeLanding',
+        ['$log'],
+        ngModule.Get()
+    );
 
     // DIRECTIVE SETUP
     public restrict: string = 'E';

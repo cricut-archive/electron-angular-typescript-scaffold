@@ -1,0 +1,7 @@
+printWidth: 90               # Specify the length of line that the printer will wrap on.
+tabWidth: 4                  # Specify the number of spaces per indentation-level.
+useTabs: false               # Indent lines with tabs instead of spaces.
+singleQuote: true
+trailingComma: "none"
+arrowParens: "always"
+semi: true                   # Print semicolons at the ends of statements.

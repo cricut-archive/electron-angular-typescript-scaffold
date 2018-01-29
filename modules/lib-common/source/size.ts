@@ -8,5 +8,4 @@ export class Size {
     public get Area(): number {
         return this.Width * this.Height;
     }
-
 }

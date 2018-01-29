@@ -64,12 +64,6 @@ module.exports = function(inArgs) {
                     { loader: "less-loader", options: { sourceMap: true } }] }               
             );
             lConfig.module.loaders.push(
-                { test: /\.scss$/, loader: [
-                    { loader: "style-loader", options: { hmr: false, sourceMap: true } },
-                    { loader: "css-loader", options: { sourceMap: true } }, 
-                    { loader: "sass-loader", options: { sourceMap: true } }] }               
-            );
-            lConfig.module.loaders.push(
                 { test: /\.(ttf|eot|svg|woff|woff2)(\?.*)?$/, loader: "file-loader",
                   options: { name: '/../../fonts/[name].[ext]',
                   publicPath: function(inPath) { return inPath.replace('/../..', './'); } }  
